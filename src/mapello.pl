@@ -10,7 +10,7 @@ code(white, 'W', 4).
 code(black, 'B', 5).
 
 getElement(X,E) :- code(E,_,X).
-randomElement(Bg,End,Elem) :- random(Bg,End,X), getElement(X,Elem).
+getRandomElement(Bg,End,Elem) :- random(Bg,End,X), getElement(X,Elem).
 
 letter(0, 'A').
 letter(1, 'B').
@@ -23,8 +23,27 @@ letter(7, 'H').
 letter(8, 'I').
 letter(9, 'J').
 
-player(black, 'BLACK\'s turn').
-player(white, 'WHITE\'s turn').
+:- dynamic player/3.
+
+player(black, 'BLACK', 0). 
+player(white, 'WHITE', 0).
+
+addPlayerBonus(Id) :-
+    retract(player(Id,String,Old)),
+    New is Old + 3,
+    assert(player(Id,String,New)).
+
+:- dynamic currentPieces/2.
+
+currentPieces(wall, 8).
+currentPieces(joker, 8).
+currentPieces(bonus, 8).
+
+removePiece(Id) :-
+    retract(currentPieces(Id, Old)),
+    New is Old - 1,
+    assert(currentPieces(Id, New)),
+    Old > 0.
 
 %Board -  Hard Coded Board
 initial([
@@ -42,10 +61,10 @@ initial([
 
 lineType1(L1) :- 
     length(L1, 10), 
-    maplist(randomElement(0,2), L1).
+    maplist(getRandomElement(0,2), L1).
 lineType2(L) :- 
     length(Lx, 8), 
-    maplist(randomElement(1,4), Lx), 
+    maplist(getRandomElement(1,4), Lx), 
     append([wall],[],L2), 
     append(L2, Lx, L3), 
     append(L3, [wall], L).
@@ -127,6 +146,6 @@ play(r):-
 display_game(GameState, Player):-
     print_board(GameState),nl,  
     write('--------------- '),
-    player(Player, PlayerIndication),
-    write(PlayerIndication),
+    player(Player, PlayerString, PlayerPoints),
+    format('~s\'s turn | Has ~d points', [PlayerString, PlayerPoints]),
     write(' ---------------').
