@@ -33,17 +33,109 @@ addPlayerBonus(Id) :-
     New is Old + 3,
     assert(player(Id,String,New)).
 
-:- dynamic currentPieces/2.
+:- dynamic localPieces/2.
+:- dynamic globalPieces/2.
 
-currentPieces(wall, 8).
-currentPieces(joker, 8).
-currentPieces(bonus, 8).
+localPieces(wall, 0).
+localPieces(joker, 0).
+localPieces(bonus, 0).
+globalPieces(wall, 8).
+globalPieces(joker, 8).
+globalPieces(bonus, 8).
 
-removePiece(Id) :-
-    retract(currentPieces(Id, Old)),
+restorePieces(Id) :-
+    retract(globalPieces(Id, _)),
+    assert(globalPieces(Id, 8)),
+    retract(localPieces(Id, _)),
+    assert(localPieces(Id, 8)).
+
+setLocalPieces(Id,N) :-
+    retract(localPieces(Id, _)),
+    assert(localPieces(Id, N)).
+
+removeLocalPiece(Id) :-
+    retract(localPieces(Id, Old)),
     New is Old - 1,
-    assert(currentPieces(Id, New)),
+    assert(localPieces(Id, New)),
     Old > 0.
+
+removeGlobalPiece(Id) :-
+    retract(globalPieces(Id, Old)),
+    New is Old - 1,
+    assert(globalPieces(Id, New)),
+    Old > 0.
+
+getOuterWallOrJoker(Elem) :-
+    getRandomElement(0,2,Elem), 
+    Elem == joker, 
+    localPieces(joker,N), 
+    N > 0, 
+    globalPieces(joker, Nm),
+    Nm > 0,
+    !, removeLocalPiece(joker), removeGlobalPiece(joker).
+getOuterWallOrJoker(Elem) :- 
+    Elem = wall.
+
+getInnerWallBonusEmpty(Elem) :- 
+    getRandomElement(1,4,Elem), 
+    Elem == wall, 
+    localPieces(wall,N), 
+    N > 0, 
+    globalPieces(wall, Nm),
+    Nm > 0,
+    !, removeLocalPiece(wall), removeGlobalPiece(wall).
+getInnerWallBonusEmpty(Elem) :- 
+    localPieces(bonus,N), 
+    N > 0, 
+    globalPieces(bonus, Nm),
+    Nm > 0,
+    !, removeLocalPiece(bonus), Elem = bonus, removeGlobalPiece(bonus).
+getInnerWallBonusEmpty(Elem) :- 
+    Elem = empty.
+
+randomReverse(L,Lr) :-
+    random(0,2,X),
+    X == 0, !,
+    reverse(L,Lr).
+
+randomReverse(L,Lr) :- Lr = L.    
+
+lineType1(L1) :- 
+    setLocalPieces(joker, 2),
+    length(La, 10), 
+    maplist(getOuterWallOrJoker, La),
+    randomReverse(La, L1).
+
+setLineT2T3Outer(E1, E10) :-
+    maplist(setLocalPieces,[joker, wall, bonus],[1,1,1]),
+    getOuterWallOrJoker(E1),
+    getOuterWallOrJoker(E10).
+
+lineType2(L2) :- 
+    setLineT2T3Outer(E1,E10),
+    length(Li,8),
+    maplist(getInnerWallBonusEmpty, Li),
+    append([E1],Li,L3),
+    append(L3,[E10],La),
+    randomReverse(La, L2).
+
+lineType3(L3, LP) :-
+    setLineT2T3Outer(E1,E10),
+    length(Li1, 3),
+    maplist(getInnerWallBonusEmpty, Li1),
+    randomReverse(Li1, Lir1),
+    length(Li2, 3),
+    maplist(getInnerWallBonusEmpty, Li2),
+    randomReverse(Li2, Lir2),
+    append([[E1], Lir1, LP, Lir2, [E10]],L3).
+
+initial(r,R) :- 
+    maplist(restorePieces,[wall, joker, bonus]),
+    maplist(lineType1, [LA,LJ]),
+    maplist(lineType2, [LB,LI,LC,LH,LD,LG]),
+    lineType3(LE, [black, white]),
+    lineType3(LF, [white, black]),
+    append([LA, LB, LC, LD, LE, LF, LG, LH, LI, LJ],[],R).
 
 %Board -  Hard Coded Board
 initial([
@@ -58,31 +150,6 @@ initial([
 [wall,  wall,  empty, bonus, empty, empty, empty, bonus, wall,  wall],
 [wall,  wall,  wall,  joker, wall,  wall,  wall,  joker, wall,  wall]
 ]).
-
-lineType1(L1) :- 
-    length(L1, 10), 
-    maplist(getRandomElement(0,2), L1).
-lineType2(L) :- 
-    length(Lx, 8), 
-    maplist(getRandomElement(1,4), Lx), 
-    append([wall],[],L2), 
-    append(L2, Lx, L3), 
-    append(L3, [wall], L).
-
-initial(r,R) :- 
-    lineType1(LA), 
-    lineType2(LB),
-    lineType2(LC),
-    lineType2(LD),
-    lineType2(LG),
-    lineType2(LH),
-    lineType2(LI),
-    lineType1(LJ),
-    append(
-        [LA, LB, LC, LD, 
-        [wall, empty, empty, empty, black, white, empty, empty, empty, wall],
-        [wall,  empty, empty, empty, white, black, empty, empty, empty, wall],
-        LG, LH, LI, LJ],[],R).
 
 intermediate([
 [wall,  wall,  wall,  wall,  joker, wall,  wall,  wall,  wall, wall],
