@@ -55,7 +55,7 @@ print_board(GameState):-
 % display_game - prints the board for the GameState, the player who plays next an its points
 display_game(GameState, Player):-
     print_board(GameState),nl,  
-    write('--------------- '),
+    write('-------- '),
     player(Player, PlayerString, PlayerPoints),
     format('~s\'s turn | Has ~d points', [PlayerString, PlayerPoints]),
-    write(' ---------------').
+    write(' --------').
