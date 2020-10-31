@@ -1,18 +1,13 @@
-:- consult('boards.pl').
+:- consult('atoms.pl').
 :- consult('display.pl').
+:- consult('boards.pl').
 
-% addPlayerBonus(Id)  - Changes the definition from player(adds a bonus)
-addPlayerBonus(Id) :-
-    retract(player(Id,String,Old)),
-    New is Old + 3,
-    assert(player(Id,String,New)).
-
-% play - starts the game with the hard coded initial board
+% play - Starts the game with the hard coded initial board
 play:-
     initial(GameState),
     display_game(GameState, black).
 
-% play(r) - starts the game with an initial random(r) board
+% play(r) - Starts the game with an initial random board
 play(r):-
     initial(r,R),
     display_game(R, black).
