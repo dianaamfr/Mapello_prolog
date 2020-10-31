@@ -1,3 +1,4 @@
+%print_line(+Line)
 print_line([]).
 print_line([C|L]):-
     write(' '),
