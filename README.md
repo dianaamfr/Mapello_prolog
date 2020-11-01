@@ -1,10 +1,10 @@
-# PLOG_TP1_RI_T6_Mapello_1
+# PLOG_TP1_RI_T6_Mapello1
 
 ----
 ### Identificação
 * Jogo: Mapello
 * Turma: 6
-* Grupo: Mapello_1
+* Grupo: Mapello1
 * Elementos:
   * Diana Cristina Amaral de Freitas, up201806230
   * Eduardo Ribas Brito, up201806271
@@ -35,11 +35,11 @@ O jogo termina quando nenhum dos jogadores puder realizar jogadas válidas, send
 
 1. Tabuleiro: Lista de listas
 2. Átomos para as Peças: 
-  * Peça Preta - B
-  * Peça Branca - W
-  * Paredes - #
-  * Jokers - J
-  * Célula Vazia - espaço(' ')
+    * Peça Preta - B
+    * Peça Branca - W
+    * Paredes - #
+    * Jokers - J
+    * Célula Vazia - espaço(' ')
 3. Jogador atual: após ser mostrada a representação do tabuleiro é indicado o jogador atual.
 4. Bónus: os pontos conquistados pelo jogador atual, através da captura de bónus, são escritos no ecrã depois da representação do tabuleiro.
 
