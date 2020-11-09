@@ -24,5 +24,5 @@ letter(9, 'j').
 player(1, 'BLACK'). 
 player(-1, 'WHITE').
 
-playerPiece(black, 1).
-playerPiece(white, -1).
+player_piece(black, 1).
+player_piece(white, -1).
