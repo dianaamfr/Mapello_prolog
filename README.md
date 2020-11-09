@@ -11,13 +11,26 @@
 ----
 ### Descrição
 
-#### Regras:
-
 O jogo Mapello é destinado a 2 jogadores, sendo cada um identificado por uma cor - **preto** ou **branco**.
 As peças utilizadas são discos reversíveis pretos e brancos, sendo a metade voltada para cima a que identifica uma peça de um jogador no tabuleiro.
-O tabuleiro, que tem uma configuração quadrangular de dimensões 10x10, é delimitado por **paredes** e por até **8 jokers**, que funcionam como peças do jogador que está a jogar.
-Na área de jogo, no centro do tabuleiro com dimensões 8x8, são colocadas, inicialmente, 2 peças de cada cor nas células centrais e até **8 paredes** extra e **8 bónus** nas restantes células. Todas as outras células do tabuleiro ficam vazias.
+O tabuleiro, que tem uma configuração quadrangular de dimensões 10x10, é delimitado por **paredes**, sendo a área jogável o centro do tabuleiro, de dimensões 8X8. 
+Para além das peças dos jogadores e das **paredes** que delimitam o tabuleiro, são também posicionadas outras peças para criar a configuração inicial, em particular **paredes** extra não jogáveis e imóveis, **bónus**, que premiam o jogador que os capturar e **jokers**, que funcionam como peças do jogador que está a jogar.
 
+#### Preparação do Tabuleiro
+O tabuleiro inicial pode ser preparado alternadamente pelos jogadores ou pode ser gerado de forma aleatória. No caso de um jogador ficar encarregue da configuração do tabuleiro, o adversário pode escolher se joga ou não em primeiro lugar.
+Seja gerada aleatoriamente ou por um dos jogadores, a configuração deve seguir as seguintes regras:
+* Os **jokers**, devem ser posicionados nos limites da área de jogo, podendo ser colocados, no máximo, 8 jokers.
+* Nas quatro células centrais do tabuleiro devem ser colocadas 2 peças de cada cor num padrão diagonal da seguinte forma:
+
+*Posicionamento das peças centrais e possível configuração dos Jokers.*
+<img src="images/setup.png" alt="Tabuleiro - Posicionamento das peças centrais e possível configuração dos Jokers" width="300"/>
+
+* Os **bónus** e as **paredes extra** podem ser posicionados em qualquer uma das restantes células livres da área jogável, podendo ser colocadas no máximo 8 peças de cada tipo. 
+
+*Exemplo de uma possível configuração do tabuleiro* 
+<img src="images/setup.png" alt="Tabuleiro - Possível configuração inicial" width="300"/>
+
+#### Regras do jogo
 Os jogadores jogam alternadamente, começando o jogador de cor preta. 
 Em cada jogada, o jogador atual posiciona uma peça no tabuleiro. 
 Todas as peças do adversário que estejam entre a nova peça e uma peça do jogador atual, que já estava no tabuleiro, incluindo jokers, seja na diagonal, vertical ou horizontal, são viradas ao contrário, ficando da cor de quem está a jogar. 
@@ -30,28 +43,19 @@ O jogo termina quando nenhum dos jogadores puder realizar jogadas válidas, send
   * [Livro de Regras](https://nestorgames.com/rulebooks/MAPELLO_EN.pdf)
 
 ----
-
 ### Representação Interna
 
-1. Tabuleiro: Lista de listas
-2. Átomos para as Peças: 
-    * Peça Preta - B
-    * Peça Branca - W
-    * Paredes - #
-    * Jokers - J
-    * Célula Vazia - espaço(' ')
-3. Jogador atual: após ser mostrada a representação do tabuleiro é indicado o jogador atual.
-4. Bónus: os pontos conquistados pelo jogador atual, através da captura de bónus, são escritos no ecrã depois da representação do tabuleiro.
+#### 1. Átomos
+Os átomos utilizados para representar as peças podem ser consultados no ficheiro `atoms.pl`. Os átomos são identificados pelo *ID*, pelo seu símbolo *Symbol*, ou pelo seu número de ordem *N*. 
 
-#### Exemplos de Representação 
-
-##### Átomos
-
-Os átomos utilizados para representar as peças podem ser consultados no ficheiro `atoms.pl`. Os átomos são identificados pelo *ID*, pelo seu símbolo *Symbol*, ou pelo seu número de ordem *N*.
+* Peça Preta - **black**
+* Peça Branca - **white**
+* Paredes - **wall**
+* Jokers - **joker**
+* Célula Vazia - **empty**
 
 ```pl
 % code(Id, Symbol, N)
-
 code(joker, 'J', 0).
 code(wall,  '#', 1).
 code(empty, ' ', 2).
@@ -60,10 +64,13 @@ code(white, 'W', 4).
 code(black, 'B', 5).
 ```
 
-##### Estados de jogo Iniciais
+#### 2. Tabuleiro
 
-###### Tabuleiro Inicial
+O tabuleiro de jogo é representado por uma lista de listas.
 
+##### 2.1. Estados de jogo Iniciais
+
+###### 2.2.1. Tabuleiro Inicial
 O tabuleiro inicial é devolvido pelo predicado `initial/1` (`initial(-GameState)`).
 
 *Representação no código* 
@@ -81,14 +88,8 @@ initial([
 [wall,  wall,  wall,  joker, wall,  wall,  wall,  joker, wall,  wall]
 ]).
 ```
-*Execução do código* 
-![Prolog - Estado Inicial](images/init_pl.PNG)
 
-*Representação equivalente no jogo original* 
-![Tabuleiro - Estado Inicial](images/init.png)
-
-
-###### Tabuleiro Inicial Random
+###### 2.1.2. Tabuleiro Inicial Random
 
 No ficheiro `random.pl`, foram implementados predicados alternativos que permitem gerar um tabuleiro inicial aleatório, respeitando as especificações e o número máximo de peças de cada tipo, utilizadas no jogo. 
 O predicado que devolve o estado inicial random do jogo, `initial/2` (`initial(r,-R)`) está, tal como os restantes estados de jogo, codificado no ficheiro `boards.pl`. São utilizados alguns predicados das bibliotecas `lists` e `random`, assim como predicados dinâmicos auxiliares, para a geração aleatória dos vários tipos de linhas do tabuleiro. 
@@ -109,11 +110,7 @@ initial(r,R) :-
   append([LA, LB, LC, LD, LE, LF, LG, LH, LI, LJ],[],R).
 ```
 
-*Execução do código* 
-![Prolog - Estado Inicial gerado aleatoriamente](images/init_random.PNG)
-
-
-##### Estado de jogo Intermédio
+##### 2.2. Estado de jogo Intermédio
 
 *Representação no código*
 ```pl
@@ -131,13 +128,7 @@ intermediate([
 ]).
 ```
 
-*Execução do código* 
-![Prolog - Estado Intermédio](images/med_pl.PNG)
-
-*Representação equivalente no jogo original* 
-![Tabuleiro - Estado Intermédio](images/med.png)
-
-##### Estado de jogo Final
+##### 2.3. Estado de jogo Final
 
 *Representação no código* 
 ```pl
@@ -154,14 +145,9 @@ final([
 [wall,  wall,  wall,  joker, wall,  wall,  wall,  joker, wall,  wall]
 ]).
 ```
-*Execução do código* 
-![Prolog - Estado Final](images/final_pl.PNG)
 
-*Representação equivalente no jogo original* 
-![Tabuleiro - Estado Final](images/final.png)
-
-##### Jogador Atual e Pontuação
-
+#### 3. Jogador Atual e Pontuação
+// TODO - change
 O predicado `player/3` é dinâmico pois, ao serem conquistados pontos por um jogador através da captura de bónus, a definição do predicado é alterada durante a execução. 
 
 ```pl
@@ -183,9 +169,30 @@ addPlayerBonus(Id) :-
 ```
 
 ----
-
 ### Visualização
 
+#### Visualização dos Tabuleiros
+
+##### Tabuleiro Inicial
+|*Execução do código*|*Representação equivalente no jogo original*|
+|--------------------|--------------------------------------------|
+|![Prolog - Estado Inicial](images/init_pl.PNG)|![Tabuleiro - Estado Inicial](images/init.png)|
+
+##### Tabuleiro Inicial Random
+*Execução do código* 
+<img src="images/init_random.PNG" alt="Prolog - Estado Inicial gerado aleatoriamente" width="300"/>
+
+##### Tabuleiro Intermédio
+|*Execução do código*|*Representação equivalente no jogo original*|
+|--------------------|--------------------------------------------|
+|![Prolog - Estado Intermédio](images/med_pl.PNG)|![Tabuleiro - Estado Intermédio](images/med.png)|
+
+##### Tabuleiro Final
+|*Execução do código*|*Representação equivalente no jogo original*|
+|--------------------|--------------------------------------------|
+|![Prolog - Estado Final](images/final_pl.PNG)|![Tabuleiro - Estado Final](images/final.png)|
+
+#### Predicados de Visualização
 O predicado de visualização, `display_game(+GameState, +Player)`, recorre aos predicados do ficheiro `display.pl` para desenhar o estado de jogo. O jogador e os seus pontos são obtidos com o predicado `player(+Player, -PlayerString, -PlayerPoints)`.
 
 ```pl
@@ -241,7 +248,6 @@ print_line([C|L]):-
 ```
 
 ----
-
 ### Execução
 
 O predicado principal é `play/0`, que imprime o estado de jogo inicial, no ecrã.
