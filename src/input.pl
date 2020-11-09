@@ -18,7 +18,6 @@ ask_col(Col):-
 
 validate_col(Input, Input):-
 	integer(Input),
-	write(Input),
 	Input >= 1,
 	Input =< 8.
 validate_col(_, Col) :-
