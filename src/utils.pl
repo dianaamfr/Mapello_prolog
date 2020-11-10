@@ -69,3 +69,31 @@ check_bottom(Matrix, Row, Col, Piece):-
 	Bottom is Row + 1, Bottom =< 8,
 	get_matrix_value(Matrix, Bottom, Col, Value),
 	Value == Piece.
+
+% check_top_left(+Matrix, +Row, +Col, +Piece) - True if the top left cell of Matrix[Row, Col] is the same as Piece
+check_top_left(Matrix, Row, Col, Piece):-
+    Top is Row - 1, Top >= 1,
+    Left is Col - 1, Left >= 1,
+	get_matrix_value(Matrix, Top, Left, Value),
+	Value == Piece.
+
+% check_top_right(+Matrix, +Row, +Col, +Piece) - True if the top right cell of Matrix[Row, Col] is the same as Piece
+check_top_right(Matrix, Row, Col, Piece):-
+    Top is Row - 1, Top >= 1,
+    Right is Col + 1, Right =< 8,
+	get_matrix_value(Matrix, Top, Right, Value),
+	Value == Piece.
+
+% check_bottom_left(+Matrix, +Row, +Col, +Piece) - True if the bottom left cell of Matrix[Row, Col] is the same as Piece
+check_bottom_left(Matrix, Row, Col, Piece):-
+    Bottom is Row + 1, Bottom =< 8,
+    Left is Col - 1, Left >= 1,
+	get_matrix_value(Matrix, Bottom, Left, Value),
+	Value == Piece.
+
+% check_bottom_right(+Matrix, +Row, +Col, +Piece) - True if the bottom right cell of Matrix[Row, Col] is the same as Piece
+check_bottom_right(Matrix, Row, Col, Piece):-
+    Bottom is Row + 1, Bottom =< 8,
+    Right is Col + 1, Right =< 8,
+	get_matrix_value(Matrix, Bottom, Right, Value),
+	Value == Piece.

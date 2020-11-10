@@ -1,7 +1,7 @@
 :- consult('random.pl').
 
 % initial(r,R) - Creates the initial Random Game State
-initial(r,R) :- 
+initial(random, R) :- 
     maplist(restorePieces,[wall, joker, bonus]),
     maplist(lineType1, [LA,LJ]),
     maplist(lineType2, [LB,LI,LC,LH,LD,LG]),

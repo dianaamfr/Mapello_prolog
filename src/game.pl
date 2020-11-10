@@ -9,7 +9,7 @@ player_piece(white, -1).
 opponent_piece(white, 1).
 opponent_piece(black, -1).
 
-game_loop(GameState):-game_loop(GameState, 1, 2, 2).
+game_loop(GameState):- game_loop(GameState, 1, 2, 2).
 
 game_loop(GameState, Player, BlackPoints, WhitePoints):-
 	display_game(GameState, Player),
@@ -115,8 +115,11 @@ valid_surrounding(GameState, Player, OpponentPiece, Row, Col):-
 	turns_col(GameState, Player, SecondBottom, 9, Col).
 
 % TODO
-% Check diagonals - do the same as above but for diagonals
+% Check diagonals - do the same as above but for diagonals (the auxiliar functions like check_top_left, ... are created in utils)
 
+
+
+% TODO - walls inside the game area are not being considered in the next predicates... I forgot they existed
 
 % turns_row(+GameState, +Player, +Start, +End, +Row) 
 %- Search row from Start to End to find a piece that makes at least one piece turn
