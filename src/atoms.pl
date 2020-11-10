@@ -23,6 +23,3 @@ letter(9, 'j').
 % player(PlayerId, Name)
 player(1, 'BLACK'). 
 player(-1, 'WHITE').
-
-player_piece(black, 1).
-player_piece(white, -1).

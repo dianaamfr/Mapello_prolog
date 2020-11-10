@@ -30,7 +30,7 @@ display_points(BlackPoints, WhitePoints):-
     write('=> Black\'s Points: '), write(BlackPoints),nl,
     write('=> White\'s Points: '), write(WhitePoints),nl.
 
-% display_game(+GameState, +Player) - Displays the current GameState of the board, the player who plays next and its points
+% display_game(+GameState, +Player) - Displays the current GameState of the board and the player who plays next
 display_game(GameState, Player):-
     print_board(GameState),nl,  
     write('=============== '),

@@ -1,5 +1,5 @@
 ask_row(Row):-
-	write('=> Row: '),
+	write('=> Row '),
 	read(Input),
 	validate_row(Input, Row).
 
@@ -12,7 +12,7 @@ validate_row(_, Row) :-
     ask_row(Row).
 
 ask_col(Col):-
-	write('=> Column: '),
+	write('=> Column '),
 	read(Input),
 	validate_col(Input, Col).
 
@@ -21,5 +21,5 @@ validate_col(Input, Input):-
 	Input >= 1,
 	Input =< 8.
 validate_col(_, Col) :-
-    write('ERROR: Invalid col!\n\n'),
+    write('ERROR: Invalid Column!\n\n'),
     ask_col(Col).

@@ -31,9 +31,8 @@ Seja gerada aleatoriamente ou por um dos jogadores, a configuração deve seguir
 <img src="images/setup.png" alt="Tabuleiro - Possível configuração inicial" width="300"/>
 
 #### Regras do jogo
-Os jogadores jogam alternadamente, começando o jogador de cor preta. 
-Em cada jogada, o jogador atual posiciona uma peça no tabuleiro. 
-Todas as peças do adversário que estejam entre a nova peça e uma peça do jogador atual, que já estava no tabuleiro, incluindo jokers, seja na diagonal, vertical ou horizontal, são viradas ao contrário, ficando da cor de quem está a jogar. 
+Os jogadores jogam alternadamente, começando o jogador de cor preta. Em cada jogada, o jogador atual posiciona uma peça no tabuleiro. 
+Todas as peças do adversário que estejam entre a nova peça e a primeira peça do jogador atual ou joker a contar da nova peça, seja na diagonal, vertical ou horizontal, são viradas ao contrário, ficando da cor de quem está a jogar. 
 Uma jogada válida tem que fazer com que pelo menos uma das peças do adversário seja virada. Se o jogador não conseguir realizar uma jogada válida, a vez passa para o seu adversário.
 Se o jogador posicionar uma peça sobre um bónus ganha 3 pontos.
 O jogo termina quando nenhum dos jogadores puder realizar jogadas válidas, sendo o vencedor aquele que tiver mais peças no tabuleiro com a sua cor voltada para cima, adicionando os pontos relativos aos bónus capturados.
