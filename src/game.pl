@@ -58,6 +58,8 @@ Check if a move is valid:
 3. placing the cell will turn at least one piece
 */
 valid_move(GameState, Player, [Row, Col]):-
+	% cell is within limits
+	within_limits(Row, Col),
 	% cell is empty or with bonus
 	(empty_cell(GameState, Row, Col); bonus_cell(GameState, Row, Col)),
 	opponent_piece(OpponentPiece, Player),
@@ -76,6 +78,10 @@ bonus_cell(GameState, Row, Col):-
 	get_matrix_value(GameState, Row, Col, Value),
 	Value == bonus.
 
+% within_limits(+Row, +Col) - Check if a cell is within the playable are
+within_limits(Row, Col):-
+	Row > 0, Row < 9,
+	Col > 0, Col < 9.
 
 % TODO
 % update_points(GameState, NewGameState, Row, Col, BlackPoints, WhitePoints).
