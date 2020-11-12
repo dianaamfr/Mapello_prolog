@@ -92,7 +92,6 @@ place_loop(Board, NewBoard, N, Message, Piece) :-
 % place_piece(+Board, +Piece, +ActualPiece, +Row, +Col, -NewBoard) - Place piece on Board[Row,Col] if the position is valid for Piece
 place_piece(Board, Piece, ActualPiece, Row, Col, NewBoard):-
     Piece == joker,
-    write('here'),
     ActualPiece == wall,
     set_matrix_value(Board, Row, Col, Piece, NewBoard).
 

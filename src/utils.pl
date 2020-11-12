@@ -97,3 +97,13 @@ check_bottom_right(Matrix, Row, Col, Piece):-
     Right is Col + 1, Right =< 8,
 	get_matrix_value(Matrix, Bottom, Right, Value),
 	Value == Piece.
+
+% empty_cell(+Matrix, +Row, +Col) - Check if a cell is empty
+empty_cell(Matrix, Row, Col) :-
+	get_matrix_value(Matrix, Row, Col, Value),
+	Value == empty.
+
+% bonus_cell(+Matrix, +Row, +Col) - Check if a cell has a bonus
+bonus_cell(Matrix, Row, Col):-
+	get_matrix_value(Matrix, Row, Col, Value),
+	Value == bonus.

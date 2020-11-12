@@ -15,7 +15,7 @@ print_matrix([L|T], N):-
     write(' |'),
     N1 is N + 1,
     print_line(L), nl,
-    write('   |   |   |   |   |   |   |   |   |   |   |\n'),
+    write('---|---|---|---|---|---|---|---|---|---|---|\n'),
     print_matrix(T, N1).
 
 % print_board(+GameState) - Prints the current GameState of the board
