@@ -31,6 +31,8 @@ ask_move(Row, Col):-
 
 % move(+GameState, +Move, -NewGameState) - Validates and executes a move, returning the new game state
 move(GameState, [Player, Row, Col], NewGameState):-
+	% cell is within limits
+	within_limits(Row, Col),
 	% validate the move
 	valid_move(GameState, Player, [Row, Col]),
 	% get the piece to be moved
@@ -46,11 +48,14 @@ move(GameState, [Player, _, _], NewGameState):-
 	ask_move(Row,Col),
 	move(GameState, [Player, Row, Col], NewGameState).
 
+% within_limits(+Row, +Col) - Check if a cell is within the playable area
+within_limits(Row, Col):-
+	Row > 0, Row < 9,
+	Col > 0, Col < 9.
 
 % valid_moves(+GameState, +Player, -ListOfMoves) - Get the list of possible moves (NOT CONFIRMED)
 valid_moves(GameState, Player, ListOfMoves):-
 	findall(Move, valid_move(GameState, Player, Move), ListOfMoves).
-
 
 /* valid_move(+GameState, +Player, +Move) - 
 Check if a move is valid: 
