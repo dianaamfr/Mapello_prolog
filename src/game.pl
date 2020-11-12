@@ -9,16 +9,17 @@ player_piece(white, -1).
 opponent_piece(white, 1).
 opponent_piece(black, -1).
 
-game_loop(GameState):- game_loop(GameState, 1, 2, 2).
+game_loop(GameState):- game_loop(GameState, 1, 0, 0).
 
 game_loop(GameState, Player, BlackPoints, WhitePoints):-
+	write('\33\[2J'),
 	display_game(GameState, Player),
 	display_points(BlackPoints, WhitePoints),
 	ask_move(Row, Col),
 	move(GameState, [Player, Row, Col], NewGameState),
-	% update_points(GameState, NewGameState, Row, Col, BlackPoints, WhitePoints),
+	update_points(GameState, Row, Col, Player, BlackPoints, WhitePoints, NewBP, NewWP),
 	NewPlayer is -Player,
-	game_loop(NewGameState, NewPlayer, BlackPoints, WhitePoints).
+	game_loop(NewGameState, NewPlayer, NewBP, NewWP).
 
 
 % ask_move(-Row, -Col) - Gets Move from user input
@@ -58,72 +59,50 @@ Check if a move is valid:
 3. placing the cell will turn at least one piece
 */
 valid_move(GameState, Player, [Row, Col]):-
-	% cell is within limits
-	within_limits(Row, Col),
 	% cell is empty or with bonus
 	(empty_cell(GameState, Row, Col); bonus_cell(GameState, Row, Col)),
+	% gets the opponent's piece
 	opponent_piece(OpponentPiece, Player),
-	% cell is adjacent to opponent's piece & turns at least a piece
+	% cell is adjacent to opponent's piece 
 	valid_surrounding(GameState, Player, OpponentPiece, Row, Col).
 
-
-% empty_cell(+GameState, +Row, +Col) - Check if a cell is empty
-empty_cell(GameState, Row, Col) :-
-	get_matrix_value(GameState, Row, Col, Value),
-	Value == empty.
-
-
-% bonus_cell(+GameState, +Row, +Col) - Check if a cell has a bonus
-bonus_cell(GameState, Row, Col):-
-	get_matrix_value(GameState, Row, Col, Value),
-	Value == bonus.
-
-% within_limits(+Row, +Col) - Check if a cell is within the playable are
-within_limits(Row, Col):-
-	Row > 0, Row < 9,
-	Col > 0, Col < 9.
-
 % TODO
-% update_points(GameState, NewGameState, Row, Col, BlackPoints, WhitePoints).
+update_points(GameState, Row, Col, Player, BlackPoints, WhitePoints, NewBP, NewWP) :-
+	bonus_cell(GameState, Row, Col),
+	update_points(Player, BlackPoints, WhitePoints, NewBP, NewWP).
+
+update_points(GameState, Row, Col, Player, BlackPoints, WhitePoints, NewBP, NewWP) :- 
+	NewWP is WhitePoints, NewBP is BlackPoints.
+
+update_points(Player, BlackPoints, WhitePoints, NewBP, NewWP) :-
+	Player = 1,
+	NewBP is BlackPoints + 3, NewWP is WhitePoints.
+
+update_points(Player, BlackPoints, WhitePoints, NewBP, NewWP) :-
+	NewWP is WhitePoints + 3, NewBP is BlackPoints.
 
 
 /* valid_surrounding(+GameState, +Player, + OpponentPiece, +Row, +Col) - 
 Check if a move is valid by checking surrounding pieces: 
 1. the cell has an opponent's piece adjacent to it in a specific direction
-2. placing the cell will turn at least one piece in that direction
-*/
-valid_surrounding(GameState, Player, OpponentPiece, Row, Col):-
-	% right piece is an opponent's piece
-	check_right(GameState, Row, Col, OpponentPiece),
-	SecondRight is Col + 2, SecondRight =< 9,
-	% the placement turns at least a piece to its right
-	turns_row(GameState, Player, SecondRight, 9, Col).
-
+*/	
 valid_surrounding(GameState, Player, OpponentPiece, Row, Col):-
 	% left piece is an opponent's piece
-	check_left(GameState, Row, Col, OpponentPiece),
-	SecondLeft is Col - 2, SecondLeft >= 0,
-	% the placement turns at least a piece to its left
-	turns_row(GameState, Player, 0, SecondLeft, Row).
-
-valid_surrounding(GameState, Player, OpponentPiece, Row, Col):-
+	check_left(GameState, Row, Col, OpponentPiece);
+	% right piece is an opponent's piece
+	check_right(GameState, Row, Col, OpponentPiece);
 	% top piece is an opponent's piece
-	check_top(GameState, Row, Col, OpponentPiece),
-	SecondTop is Row - 2, SecondTop >= 0,
-	% the placement turns at least an upper piece 
-	turns_col(GameState, Player, 0, SecondTop, Col).
-
-valid_surrounding(GameState, Player, OpponentPiece, Row, Col):-
+	check_top(GameState, Row, Col, OpponentPiece);
 	% bottom piece is an opponent's piece
-	check_bottom(GameState, Row, Col, OpponentPiece),
-	SecondBottom is Row + 2, SecondBottom =< 9,
-	% the placement turns at least a piece from below
-	turns_col(GameState, Player, SecondBottom, 9, Col).
-
-% TODO
-% Check diagonals - do the same as above but for diagonals (the auxiliar functions like check_top_left, ... are created in utils)
-
-
+	check_bottom(GameState, Row, Col, OpponentPiece);
+	% top left piece is an opponent's piece
+	check_top_left(GameState, Row, Col, OpponentPiece);
+	% top right is an opponent's piece
+	check_top_right(GameState, Row, Col, OpponentPiece);
+	% bottom left is an opponent's piece
+	check_bottom_left(GameState, Row, Col, OpponentPiece);
+	% bottom right is an opponent's piece
+	check_bottom_right(GameState, Row, Col, OpponentPiece).
 
 % TODO - walls inside the game area are not being considered in the next predicates... I forgot they existed
 
