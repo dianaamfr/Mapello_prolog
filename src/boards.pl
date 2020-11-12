@@ -29,80 +29,93 @@ initial(random, Board) :-
 % Let user set up the board
 initial(user, Board) :- 
     empty(Empty),
-    ask_board(Empty, Board).
-
-ask_board(Empty, Board):-
     place_jokers(Empty, B1),
+    print_board(B1),
     place_walls(B1, B2),
+    print_board(B2),
     place_bonus(B2, Board).
 
+% place_joker(+Board, -NewBoard) - Places the Jokers in the Board and returns the NewBoard
 place_jokers(Board, NewBoard):-
-    ask_number(N,'jokers'),
-    nl, print_board(Board),
-    place_loop(Board, NewBoard, N, joker).
+    ask_number(N, 'jokers'),
+    Message = '\nNote: Jokers must be placed on the boundary walls!\n',
+    place_loop(Board, NewBoard, N, Message, joker).
 
+% place_walls(+Board, -NewBoard) - Places the Walls in the Board and returns the NewBoard
 place_walls(Board, NewBoard):-
-    ask_number(N,'walls'),
-    nl, print_board(Board),
-    place_loop(Board, NewBoard, N, wall).
+    ask_number(N, 'walls'),
+    Message = '\nNote: Walls must be placed in empty cells!\n',
+    place_loop(Board, NewBoard, N, Message, wall).
 
+% place_bonus(+Board, -NewBoard) - Places the Bonus in the Board and returns the NewBoard
 place_bonus(Board, NewBoard):-
-    ask_number(N,'bonus'),
-    nl, print_board(Board),
-    place_loop(Board, NewBoard, N, bonus).
+    ask_number(N, 'bonus'),
+    Message = '\nNote: Bonus must be placed in empty cells!\n',
+    place_loop(Board, NewBoard, N, Message, bonus).
 
 
-place_loop(NewBoard, NewBoard ,0,_).
-place_loop(Board, NewBoard, N, Piece) :- 
-    N > 0, 
-    format('\n=> Choose ~s position:\n', [Piece]),
-    ask_row(Row),
-    ask_col(Col),
-    get_matrix_value(Board, Row, Col, ActualPiece),
-    place_piece(Board, Piece, ActualPiece, Row, Col, NewBoard,N).
-
-
-place_piece(Board, Piece, ActualPiece, Row, Col, NewBoard, N):-
-    Piece == joker,
-    ActualPiece == wall,
-    set_matrix_value(Board, Row, Col, Piece, B1),
-    N1 is N - 1,
-    nl, print_board(B1),
-    place_loop(B1, NewBoard, N1, Piece).
-
-place_piece(Board, Piece, ActualPiece, Row, Col, NewBoard, N):-
-    Piece == bonus,
-    ActualPiece == empty,
-    set_matrix_value(Board, Row, Col, Piece, B1),
-    N1 is N - 1,
-    nl, print_board(B1),
-    place_loop(B1, NewBoard, N1, Piece).
-
-place_piece(Board, Piece, ActualPiece, Row, Col, NewBoard, N):-
-    Piece == wall,
-    ActualPiece == empty,
-    set_matrix_value(Board, Row, Col, Piece, B1),
-    N1 is N - 1,
-    nl, print_board(B1),
-    place_loop(B1, NewBoard, N1, Piece).
-
-place_piece(Board, Piece, _, _, _, NewBoard, N):-
-    write('ERROR: Invalid position!\n'),
-    place_loop(Board, NewBoard, N, Piece).
-
+% ask_number(-Number, +Piece) - Prompts the user for the number of pieces of type Piece that he wants to place
 ask_number(Number, Piece):-
     format('\n=> Number of ~s (0 to 8) ', [Piece]),
     read(Input),
     validate_number(Input, Number, Piece).
 
-validate_number(Input, Input, _):-
-	integer(Input),
-	Input >= 0,
-	Input =< 8.
+
+% validate_number(+Number, +Piece) - Checks if the number of pieces respects Mapello's rules - max 8 pieces 
+validate_number(Number, Number, _):-
+	integer(Number),
+	Number >= 0,
+	Number =< 8.
 validate_number(_, Number, Piece) :-
     write('ERROR: Invalid number!\n\n'),
     ask_number(Number, Piece).
 
+
+% place_loop(+Board, -NewBoard, N, Message, Piece) - Loop to place N pieces of type Piece on the Board and return the NewBoard
+place_loop(NewBoard, NewBoard, 0, _, _).
+place_loop(Board, NewBoard, N, Message, Piece) :- 
+    N > 0, 
+    print_board(Board),
+    write(Message),
+    % Ask position to place the piece
+    format('Choose ~s position:\n', [Piece]),
+    ask_row(Row),
+    ask_col(Col),
+    % Get the actual piece on that position
+    get_matrix_value(Board, Row, Col, ActualPiece),
+    % Place the piece on that position if valid. Otherwise ask for new position.
+    place_piece(Board, Piece, ActualPiece, Row, Col, B1),
+    N1 is N - 1,
+    place_loop(B1, NewBoard, N1, Message, Piece).
+
+
+% place_piece(+Board, +Piece, +ActualPiece, +Row, +Col, -NewBoard) - Place piece on Board[Row,Col] if the position is valid for Piece
+place_piece(Board, Piece, ActualPiece, Row, Col, NewBoard):-
+    Piece == joker,
+    write('here'),
+    ActualPiece == wall,
+    set_matrix_value(Board, Row, Col, Piece, NewBoard).
+
+place_piece(Board, Piece, ActualPiece, Row, Col, NewBoard):-
+    Piece == bonus,
+    ActualPiece == empty,
+    set_matrix_value(Board, Row, Col, Piece, NewBoard).
+
+place_piece(Board, Piece, ActualPiece, Row, Col, NewBoard):-
+    Piece == wall,
+    ActualPiece == empty,
+    set_matrix_value(Board, Row, Col, Piece, NewBoard).
+
+place_piece(Board, Piece, _, _, _, NewBoard):-
+    write('ERROR: Invalid position!\n'),
+    format('\nChoose ~s position:\n', [Piece]),
+    ask_row(Row),
+    ask_col(Col),
+    get_matrix_value(Board, Row, Col, ActualPiece),
+    place_piece(Board, Piece, ActualPiece, Row, Col, NewBoard).
+
+
+% empty(-Board) - Returns an empty Board
 empty([
 [wall,  wall,  wall,  wall,  wall, wall,  wall,  wall,  wall, wall],
 [wall,  empty, empty, empty, empty, empty, empty, empty, empty, wall],
@@ -115,7 +128,9 @@ empty([
 [wall,  empty, empty, empty, empty, empty, empty, empty, empty, wall],
 [wall,  wall,  wall,  wall, wall,  wall,  wall,  wall, wall,  wall]
 ]).
-    
+
+
+% intermediate(-Board) - Returns an intermediate board
 intermediate([
 [wall,  wall,  wall,  wall,  joker, wall,  wall,  wall,  wall, wall],
 [wall,  wall,  empty, bonus, empty, empty, bonus, empty, wall, wall],
@@ -129,6 +144,8 @@ intermediate([
 [wall,  wall,  wall,  joker, wall,  wall,  wall,  joker, wall,  wall]
 ]).
 
+
+% final(-Board) - Returns a final Board
 final([
 [wall,  wall,  wall,  wall,  joker, wall,  wall,  wall,  wall, wall],
 [wall,  wall,  white, white, white, black, white, white, wall, wall],
