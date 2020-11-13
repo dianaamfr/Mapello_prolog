@@ -49,8 +49,8 @@ get_col(ColNumber, Matrix, Col) :-
 % check_right(+Matrix, +Row, +Col, +Piece) - True if the cell on the right of Matrix[Row, Col] is the same as Piece
 check_right(Matrix, Row, Col, Piece):-
 	Right is Col + 1, Right =< 8,
-	get_matrix_value(Matrix, Row, Right, Value),
-	Value == Piece.
+    get_matrix_value(Matrix, Row, Right, Value),
+    Value == Piece.
 
 % check_left(+Matrix, +Row, +Col, +Piece) - True if the cell on the left of Matrix[Row, Col] is the same as Piece
 check_left(Matrix, Row, Col, Piece):-
