@@ -107,3 +107,13 @@ empty_cell(Matrix, Row, Col) :-
 bonus_cell(Matrix, Row, Col):-
 	get_matrix_value(Matrix, Row, Col, Value),
 	Value == bonus.
+
+get_bonus_at(Matrix, Row, Col, Bonus):-
+    bonus_cell(Matrix, Row, Col),
+    Bonus is 3.
+
+get_bonus_at(_, _, _, Bonus):-
+    Bonus is 0.
+
+numlist(N,N,[N]).
+numlist(A,B,L) :- B > A, B1 is B - 1, numlist(A,B1,NL), append(NL,[B],L).
