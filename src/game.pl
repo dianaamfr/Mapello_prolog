@@ -14,7 +14,7 @@ game_loop(GameState):- game_loop(GameState, 1, 0, 0).
 game_loop(GameState, Player, BlackPoints, WhitePoints):-
 	valid_moves(GameState, Player, ListOfMoves),
 	length(ListOfMoves, N), N > 0,
-	write('\33\[2J'),
+	
 	display_game(GameState, Player),
 	display_points(BlackPoints, WhitePoints),
 	ask_move(Row, Col),
@@ -102,8 +102,6 @@ valid_move(GameState, Player, Row, Col, WouldTurn):-
 	player_piece(PlayerPiece, Player),
 	% gets the opponent's piece
 	opponent_piece(OpponentPiece, Player),
-	% check if the cell is adjacent to the opponent's piece 
-	valid_surrounding(GameState, OpponentPiece, Row, Col),
 	% get moves that would make at least a piece turn
 	would_turn(GameState, Row, Col, PlayerPiece, OpponentPiece, WouldTurnList),
 	% one piece would turn at least
@@ -124,29 +122,6 @@ update_points(Player, BlackPoints, WhitePoints, NewBP, NewWP) :-
 
 update_points(_, BlackPoints, WhitePoints, NewBP, NewWP) :-
 	NewWP is WhitePoints + 3, NewBP is BlackPoints.
-
-
-/* valid_surrounding(+GameState, +Player, + OpponentPiece, +Row, +Col) - 
-Check if a move is valid by checking surrounding pieces: 
-1. the cell has an opponent's piece adjacent to it in a specific direction
-*/	
-valid_surrounding(GameState, OpponentPiece, Row, Col):-
-	% left piece is an opponent's piece
-	check_left(GameState, Row, Col, OpponentPiece);
-	% right piece is an opponent's piece
-	check_right(GameState, Row, Col, OpponentPiece);
-	% top piece is an opponent's piece
-	check_top(GameState, Row, Col, OpponentPiece);
-	% bottom piece is an opponent's piece
-	check_bottom(GameState, Row, Col, OpponentPiece);
-	% top left piece is an opponent's piece
-	check_top_left(GameState, Row, Col, OpponentPiece);
-	% top right is an opponent's piece
-	check_top_right(GameState, Row, Col, OpponentPiece);
-	% bottom left is an opponent's piece
-	check_bottom_left(GameState, Row, Col, OpponentPiece);
-	% bottom right is an opponent's piece
-	check_bottom_right(GameState, Row, Col, OpponentPiece).
 
 
 /* would_turn(+GameState, +Row, +Col, +PlayerPiece, +OpponentPiece, -WouldTurn) - 
@@ -178,14 +153,8 @@ would_turn_right(GameState, Row, Col, PlayerPiece, _, Acc, WouldTurn):-
 	check_right(GameState, Row, Col, PlayerPiece)),
 	WouldTurn = Acc.
 
-would_turn_right(GameState, Row, Col, PlayerPiece, OpponentPiece, Acc, WouldTurn):-
-	% check right for empty or bonus
-	(check_right(GameState, Row, Col, empty) ; check_right(GameState, Row, Col, bonus)),
-	Right is Col + 1, Right =< 9,
-	would_turn_right(GameState, Row, Right, PlayerPiece, OpponentPiece, Acc, WouldTurn).
-
 would_turn_right(_, _, _, _, _, _, WouldTurn):-
-	% check right for a wall
+	% right is a wall, bonus or empty
 	WouldTurn = [].
 
 
@@ -205,14 +174,8 @@ would_turn_left(GameState, Row, Col, PlayerPiece, _, Acc, WouldTurn):-
 	check_left(GameState, Row, Col, PlayerPiece)),
 	WouldTurn = Acc.
 
-would_turn_left(GameState, Row, Col, PlayerPiece, OpponentPiece, Acc, WouldTurn):-
-	% check left for empty or bonus
-	(check_left(GameState, Row, Col, empty) ; check_left(GameState, Row, Col, bonus)),
-	Left is Col - 1, Left >= 0,
-	would_turn_left(GameState, Row, Left, PlayerPiece, OpponentPiece, Acc, WouldTurn).
-
 would_turn_left(_, _, _, _, _, _, WouldTurn):-
-	% check left for a wall
+	% left is a wall, bonus or empty
 	WouldTurn = [].
 
 
@@ -232,14 +195,8 @@ would_turn_top(GameState, Row, Col, PlayerPiece, _, Acc, WouldTurn):-
 	check_top(GameState, Row, Col, PlayerPiece)),
 	WouldTurn = Acc.
 
-would_turn_top(GameState, Row, Col, PlayerPiece, OpponentPiece, Acc, WouldTurn):-
-	% check top for empty or bonus
-	(check_top(GameState, Row, Col, empty) ; check_top(GameState, Row, Col, bonus)),
-	Top is Row - 1, Top >= 0,
-	would_turn_top(GameState, Top, Col, PlayerPiece, OpponentPiece, Acc, WouldTurn).
-
 would_turn_top(_, _, _, _, _, _, WouldTurn):-
-	% check top for a wall
+	% top is a wall, bonus or empty
 	WouldTurn = [].
 
 
@@ -259,14 +216,8 @@ would_turn_bottom(GameState, Row, Col, PlayerPiece, _, Acc, WouldTurn):-
 	check_bottom(GameState, Row, Col, PlayerPiece)),
 	WouldTurn = Acc.
 
-would_turn_bottom(GameState, Row, Col, PlayerPiece, OpponentPiece, Acc, WouldTurn):-
-	% check bottom for empty or bonus
-	(check_bottom(GameState, Row, Col, empty) ; check_bottom(GameState, Row, Col, bonus)),
-	Bottom is Row + 1, Bottom =< 9,
-	would_turn_bottom(GameState, Bottom, Col, PlayerPiece, OpponentPiece, Acc, WouldTurn).
-
 would_turn_bottom(_, _, _, _, _, _, WouldTurn):-
-	% check bottom for a wall
+	% bottom is a wall, bonus or empty
 	WouldTurn = [].
 
 
@@ -287,15 +238,8 @@ would_turn_top_right(GameState, Row, Col, PlayerPiece, _, Acc, WouldTurn):-
 	check_top_right(GameState, Row, Col, PlayerPiece)),
 	WouldTurn = Acc.
 
-would_turn_top_right(GameState, Row, Col, PlayerPiece, OpponentPiece, Acc, WouldTurn):-
-	% check top_right for empty or bonus
-	(check_top_right(GameState, Row, Col, empty) ; check_top_right(GameState, Row, Col, bonus)),
-	Top is Row - 1, Top >= 0,
-	Right is Col + 1, Right =< 9,
-	would_turn_top_right(GameState, Top, Right, PlayerPiece, OpponentPiece, Acc, WouldTurn).
-
 would_turn_top_right(_, _, _, _, _, _, WouldTurn):-
-	% check top_right for a wall
+	% top_right is a wall, bonus or empty
 	WouldTurn = [].
 
 
@@ -316,15 +260,8 @@ would_turn_top_left(GameState, Row, Col, PlayerPiece, _, Acc, WouldTurn):-
 	check_top_left(GameState, Row, Col, PlayerPiece)),
 	WouldTurn = Acc.
 
-would_turn_top_left(GameState, Row, Col, PlayerPiece, OpponentPiece, Acc, WouldTurn):-
-	% check top_left for empty or bonus
-	(check_top_left(GameState, Row, Col, empty) ; check_top_left(GameState, Row, Col, bonus)),
-	Top is Row - 1, Top >= 0,
-	Left is Col - 1, Left >= 0,
-	would_turn_top_left(GameState, Top, Left, PlayerPiece, OpponentPiece, Acc, WouldTurn).
-
 would_turn_top_left(_, _, _, _, _, _, WouldTurn):-
-	% check top_left for a wall
+	% top_left is a wall, bonus or empty
 	WouldTurn = [].
 
 
@@ -345,15 +282,8 @@ would_turn_bottom_right(GameState, Row, Col, PlayerPiece, _, Acc, WouldTurn):-
 	check_bottom_right(GameState, Row, Col, PlayerPiece)),
 	WouldTurn = Acc.
 
-would_turn_bottom_right(GameState, Row, Col, PlayerPiece, OpponentPiece, Acc, WouldTurn):-
-	% check bottom_right for empty or bonus
-	(check_bottom_right(GameState, Row, Col, empty) ; check_bottom_right(GameState, Row, Col, bonus)),
-	Bottom is Row + 1, Bottom =< 9,
-	Right is Col + 1, Right =< 9,
-	would_turn_bottom_right(GameState, Bottom, Right, PlayerPiece, OpponentPiece, Acc, WouldTurn).
-
 would_turn_bottom_right(_, _, _, _, _, _, WouldTurn):-
-	% check bottom_right for a wall
+	% bottom_right is a wall, bonus or empty
 	WouldTurn = [].
 
 /* would_turn_bottom_left(+GameState, +Row, +Col, +PlayerPiece, +OpponentPiece, -WouldTurn) - 
@@ -373,15 +303,8 @@ would_turn_bottom_left(GameState, Row, Col, PlayerPiece, _, Acc, WouldTurn):-
 	check_bottom_left(GameState, Row, Col, PlayerPiece)),
 	WouldTurn = Acc.
 
-would_turn_bottom_left(GameState, Row, Col, PlayerPiece, OpponentPiece, Acc, WouldTurn):-
-	% check bottom_left for empty or bonus
-	(check_bottom_left(GameState, Row, Col, empty) ; check_bottom_left(GameState, Row, Col, bonus)),
-	Bottom is Row + 1, Bottom =< 9,
-	Left is Col - 1, Left >= 0,
-	would_turn_bottom_left(GameState, Bottom, Left, PlayerPiece, OpponentPiece, Acc, WouldTurn).
-
 would_turn_bottom_left(_, _, _, _, _, _, WouldTurn):-
-	% check bottom_left for a wall
+	% bottom left is a wall, bonus or empty
 	WouldTurn = [].
 
 

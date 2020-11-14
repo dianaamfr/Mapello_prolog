@@ -14,6 +14,7 @@ handle_menu_option(0).
 
 handle_menu_option(1):-
     setup_menu(GameMode),
+    write('\33\[2J'),
     game_loop(GameMode).
 
 handle_menu_option(_):-
