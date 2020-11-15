@@ -12,39 +12,52 @@ opponent_piece(black, -1).
 game_loop(GameState):- game_loop(GameState, 1, 0, 0).
 
 game_loop(GameState, Player, BlackPoints, WhitePoints):-
-	valid_moves(GameState, Player, ListOfMoves),
-	length(ListOfMoves, N), N > 0,
-	
+	\+game_over(GameState, Player, _),
 	display_game(GameState, Player),
 	display_points(BlackPoints, WhitePoints),
-	ask_move(Row, Col),
-	move(GameState, [Player, Row, Col], NewGameState),
-	update_points(GameState, Row, Col, Player, BlackPoints, WhitePoints, NewBP, NewWP),
+	catch(ask_move(Row,Col),_,ask_move(Row,Col)),
+	move(GameState, [Player, Row, Col, BlackPoints, WhitePoints, NewBP, NewWP], NewGameState),
 	NewPlayer is -Player,
 	game_loop(NewGameState, NewPlayer, NewBP, NewWP).
 
 game_loop(GameState, Player, BlackPoints, WhitePoints):-
 	NewPlayer is -Player,
-	valid_moves(GameState, NewPlayer, ListOfMoves),
-	length(ListOfMoves, N), N > 0,
+	\+game_over(GameState, NewPlayer, _),
 	game_loop(GameState, NewPlayer, BlackPoints, WhitePoints).
 
-game_loop(_, _, BlackPoints, WhitePoints):-
+game_loop(GameState, _, BlackPoints, WhitePoints):-
+	game_over(GameState-BlackPoints-WhitePoints, Winner),
 	write('\33\[2J'),
 	write('Game Over!\n'),
-	BlackPoints > WhitePoints,
-	write('Black Player has won!\n').
+	write(Winner).
 
-game_loop(_, _, BlackPoints, WhitePoints):-
-	write('\33\[2J'),
-	write('Game Over!\n'),
-	WhitePoints > BlackPoints,
-	write('White Player has won!\n').
 
-game_loop(_, _, _, _):-
-	write('\33\[2J'),
-	write('Game Over!\n'),
-	write('It is a draw!\n').
+game_over(GameState, Player, _):-
+	value(GameState, Player, 0).
+
+game_over(GameState-BlackPoints-WhitePoints, Winner):-
+	get_total_points(GameState-BlackPoints-WhitePoints, TotalBp, TotalWp),
+	get_winner(TotalBp, TotalWp, Winner).
+
+
+get_total_points(GameState-BlackPoints-WhitePoints, TotalBp, TotalWp):-
+	count_pieces(GameState, black, Bp),
+	count_pieces(GameState, white, Wp),
+	TotalBp is BlackPoints + Bp,
+	TotalWp is WhitePoints + Wp.
+
+
+get_winner(TotalBp, TotalWp, Winner) :-
+	TotalBp > TotalWp,
+	Winner = 'Black Player has won!\n'.
+
+get_winner(TotalBp, TotalWp, Winner) :-
+	TotalWp > TotalBp,
+	Winner = 'White Player has won!\n'.
+
+get_winner(_, _, Winner) :-
+	Winner = 'It is a draw!\n'.
+
 
 % ask_move(-Row, -Col) - Gets Move from user input
 ask_move(Row, Col):-
@@ -54,7 +67,7 @@ ask_move(Row, Col):-
 
 
 % move(+GameState, +Move, -NewGameState) - Validates and executes a move, returning the new game state
-move(GameState, [Player, Row, Col], NewGameState):-
+move(GameState, [Player, Row, Col, BlackPoints, WhitePoints, NewBP, NewWP], NewGameState):-
 	% cell is within limits
 	within_limits(Row, Col),
 	% validate the move
@@ -64,18 +77,27 @@ move(GameState, [Player, Row, Col], NewGameState):-
 	% place the piece
 	set_matrix_value(GameState, Row, Col, Piece, NGS1),
 	% turn opponent's pieces
-	turn_pieces(NGS1, WouldTurn, Piece, NewGameState).
+	turn_pieces(NGS1, WouldTurn, Piece, NewGameState),
+	% finally update points
+	update_points(GameState, Row, Col, Player, BlackPoints, WhitePoints, NewBP, NewWP).
 
 % If move is invalid then ask for another
-move(GameState, [Player, _, _], NewGameState):-
+move(GameState, [Player, _, _, BlackPoints, WhitePoints, NewBP, NewWP], NewGameState):-
 	write('\n ERROR: Invalid move!\n'),
-	ask_move(Row,Col),
-	move(GameState, [Player, Row, Col], NewGameState).
+	catch(ask_move(Row,Col),_,ask_move(Row,Col)),
+	move(GameState, [Player, Row, Col, BlackPoints, WhitePoints, NewBP, NewWP], NewGameState).
+
 
 % within_limits(+Row, +Col) - Check if a cell is within the playable area
 within_limits(Row, Col):-
 	Row > 0, Row < 9,
 	Col > 0, Col < 9.
+
+
+value(GameState, Player, Value):-
+	valid_moves(GameState, Player, ListOfMoves),
+	length(ListOfMoves, Value).
+
 
 % valid_moves(+GameState, +Player, -ListOfMoves) - Get the list of possible moves (NOT CONFIRMED)
 valid_moves(GameState, Player, ListOfMoves):-
@@ -88,6 +110,7 @@ valid_moves(GameState, Player, ListOfMoves):-
 		ListOfMoves1),
 	remove_dups(ListOfMoves1,ListOfMovesU),
 	sort(ListOfMovesU, ListOfMoves).
+
 
 /* valid_move(+GameState, +Player, +Move) - 
 Check if a move is valid: 

@@ -110,10 +110,16 @@ bonus_cell(Matrix, Row, Col):-
 
 get_bonus_at(Matrix, Row, Col, Bonus):-
     bonus_cell(Matrix, Row, Col),
-    Bonus is 3.
+    Bonus is 3, !.
 
 get_bonus_at(_, _, _, Bonus):-
-    Bonus is 0.
+    Bonus is 0, !.
 
-numlist(N,N,[N]).
-numlist(A,B,L) :- B > A, B1 is B - 1, numlist(A,B1,NL), append(NL,[B],L).
+
+count_pieces(GameState, Piece, N) :- 
+    L = [1,2,3,4,5,6,7,8],
+	findall(Row-Col, 
+		(member(Row, L), member(Col, L),
+        get_matrix_value(GameState, Row, Col, Piece)), 
+		ListOfPieces),
+    length(ListOfPieces, N).
