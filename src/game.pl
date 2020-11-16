@@ -9,25 +9,24 @@ player_piece(white, -1).
 opponent_piece(white, 1).
 opponent_piece(black, -1).
 
-game_loop(GameState):- game_loop(GameState, 1, 0, 0).
+game_loop(GameState, P1, P2, Level):- game_loop(GameState, 1, 0, 0, P1, P2, Level).
 
-game_loop(GameState, Player, BlackPoints, WhitePoints):-
+game_loop(GameState, Player, BlackPoints, WhitePoints, P1, P2, Level):-
 	\+game_over(GameState, Player, _),
 	display_game(GameState, Player),
 	display_points(BlackPoints, WhitePoints),
-	catch(ask_move(Row,Col),_,ask_move(Row,Col)),
+	catch(ask_move(GameState, Player, P1, P2, Level, Row, Col),_,ask_move(GameState, Player, P1, P2, Level, Row, Col)),
 	move(GameState, [Player, Row, Col, BlackPoints, WhitePoints, NewBP, NewWP], NewGameState),
-	NewPlayer is -Player,
-	game_loop(NewGameState, NewPlayer, NewBP, NewWP).
+	NewPlayer is -Player, 
+	game_loop(NewGameState, NewPlayer, NewBP, NewWP, P1, P2, Level).
 
-game_loop(GameState, Player, BlackPoints, WhitePoints):-
+game_loop(GameState, Player, BlackPoints, WhitePoints, P1, P2, Level):-
 	NewPlayer is -Player,
 	\+game_over(GameState, NewPlayer, _),
-	game_loop(GameState, NewPlayer, BlackPoints, WhitePoints).
+	game_loop(GameState, NewPlayer, BlackPoints, WhitePoints, P1, P2, Level).
 
-game_loop(GameState, _, BlackPoints, WhitePoints):-
+game_loop(GameState, _, BlackPoints, WhitePoints, _, _, _):-
 	game_over(GameState-BlackPoints-WhitePoints, Winner),
-	write('\33\[2J'),
 	write('Game Over!\n'),
 	write(Winner).
 
@@ -60,11 +59,26 @@ get_winner(_, _, Winner) :-
 
 
 % ask_move(-Row, -Col) - Gets Move from user input
-ask_move(Row, Col):-
+ask_move(GameState, -1, _, 'c', Level, Row, Col):-
+	write('\n Choose next move:\n'),
+	choose_move(GameState, -1, Level, [Row,Col]).
+
+ask_move(GameState, 1, 'c', _, Level, Row, Col):-
+	write('\n Choose next move:\n'),
+	choose_move(GameState, 1, Level, [Row,Col]).
+
+ask_move(_, _ , _, _, _, Row, Col):-
 	write('\n Choose next move:\n'),
 	ask_row(Row),
 	ask_col(Col).
 
+
+% choose_move(+GameState, +Player, +Level, -Move)
+choose_move(GameState, Player, 1, [Row,Col]):-
+	valid_moves(GameState, Player, [_-Row-Col|_]).
+choose_move(GameState, Player, 2, [Row,Col]):-
+	valid_moves(GameState, Player, ListOfMoves),
+	last(ListOfMoves, _-Row-Col).
 
 % move(+GameState, +Move, -NewGameState) - Validates and executes a move, returning the new game state
 move(GameState, [Player, Row, Col, BlackPoints, WhitePoints, NewBP, NewWP], NewGameState):-
@@ -84,7 +98,7 @@ move(GameState, [Player, Row, Col, BlackPoints, WhitePoints, NewBP, NewWP], NewG
 % If move is invalid then ask for another
 move(GameState, [Player, _, _, BlackPoints, WhitePoints, NewBP, NewWP], NewGameState):-
 	write('\n ERROR: Invalid move!\n'),
-	catch(ask_move(Row,Col),_,ask_move(Row,Col)),
+	catch(ask_move(GameState, Player, 'u', 'u', _, Row, Col),_,ask_move(GameState,Player,'u', 'u', _, Row, Col)),
 	move(GameState, [Player, Row, Col, BlackPoints, WhitePoints, NewBP, NewWP], NewGameState).
 
 
@@ -99,7 +113,7 @@ value(GameState, Player, Value):-
 	length(ListOfMoves, Value).
 
 
-% valid_moves(+GameState, +Player, -ListOfMoves) - Get the list of possible moves (NOT CONFIRMED)
+% valid_moves(+GameState, +Player, -ListOfMoves) - Get the list of possible moves
 valid_moves(GameState, Player, ListOfMoves):-
 	L = [1,2,3,4,5,6,7,8],
 	findall(Val-Row-Col, 
