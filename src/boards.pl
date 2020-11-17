@@ -1,5 +1,5 @@
 :- consult('random.pl').
-:- use_module(library(random)).
+:-use_module(library(between)).
 
 % Initial Boards
 

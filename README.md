@@ -11,31 +11,34 @@
 ----
 ### Descrição
 
-O jogo Mapello é destinado a 2 jogadores, sendo cada um identificado por uma cor - **preto** ou **branco**.
-As peças utilizadas são discos reversíveis pretos e brancos, sendo a metade voltada para cima a que identifica uma peça de um jogador no tabuleiro.
-O tabuleiro, que tem uma configuração quadrangular de dimensões 10x10, é delimitado por **paredes**, sendo a área jogável o centro do tabuleiro, de dimensões 8X8. 
-Para além das peças dos jogadores e das **paredes** que delimitam o tabuleiro, são também posicionadas outras peças para criar a configuração inicial, em particular **paredes** extra não jogáveis e imóveis, **bónus**, que premiam o jogador que os capturar e **jokers**, que funcionam como peças do jogador que está a jogar.
+No jogo Mapello, destinado a 2 jogadores, as peças utilizadas são discos reversíveis pretos e brancos, sendo a cor voltada para cima a que identifica uma peça do jogador.
+O tabuleiro, com uma configuração quadrangular de 10x10, é delimitado por **paredes**, correspondendo a área jogável ao centro do tabuleiro, 8x8. 
+Para além das peças dos jogadores e das **paredes** que delimitam o tabuleiro, são posicionadas outras peças para criar a configuração inicial: 
+- **paredes** extra não jogáveis e imóveis, tais como as paredes delimitativas.
+- **bónus**, que premiam o jogador que jogue sobre eles com 3 pontos.
+- **jokers**, que funcionam como peças do jogador atual.
 
 #### Preparação do Tabuleiro
-O tabuleiro inicial pode ser preparado alternadamente pelos jogadores ou pode ser gerado de forma aleatória. No caso de um jogador ficar encarregue da configuração do tabuleiro, o adversário pode escolher se joga ou não em primeiro lugar.
-Seja gerada aleatoriamente ou por um dos jogadores, a configuração deve seguir as seguintes regras:
-* Os **jokers**, devem ser posicionados nos limites da área de jogo, podendo ser colocados, no máximo, 8 jokers.
-* Nas quatro células centrais do tabuleiro devem ser colocadas 2 peças de cada cor num padrão diagonal da seguinte forma:
+O tabuleiro é preparado alternadamente pelos jogadores. Quem não escolher o tabuleiro escolhe quem joga primeiro.
+A configuração deve seguir as seguintes regras:
+* Podem ser colocadas no máximo 8 peças extra de cada tipo. 
+* Os **jokers**, devem ser posicionados nos limites da área de jogo.
+* Nas quatro células centrais devem ser colocadas 2 peças de cada cor no seguinte padrão diagonal:
 
 *Posicionamento das peças centrais e possível configuração dos Jokers.*
 <img src="images/setup.png" alt="Tabuleiro - Posicionamento das peças centrais e possível configuração dos Jokers" width="300"/>
 
-* Os **bónus** e as **paredes extra** podem ser posicionados em qualquer uma das restantes células livres da área jogável, podendo ser colocadas no máximo 8 peças de cada tipo. 
+* Os **bónus** e as **paredes extra** podem ser posicionados em qualquer uma das restantes células livres da área jogável.
 
 *Exemplo de uma possível configuração do tabuleiro* 
 <img src="images/setup.png" alt="Tabuleiro - Possível configuração inicial" width="300"/>
 
 #### Regras do jogo
-Os jogadores jogam alternadamente, começando o jogador de cor preta. Em cada jogada, o jogador atual posiciona uma peça no tabuleiro. 
-Todas as peças do adversário que estejam entre a nova peça e a primeira peça do jogador atual ou joker a contar da nova peça, seja na diagonal, vertical ou horizontal, são viradas ao contrário, ficando da cor de quem está a jogar. 
-Uma jogada válida tem que fazer com que pelo menos uma das peças do adversário seja virada. Se o jogador não conseguir realizar uma jogada válida, a vez passa para o seu adversário.
-Se o jogador posicionar uma peça sobre um bónus ganha 3 pontos.
-O jogo termina quando nenhum dos jogadores puder realizar jogadas válidas, sendo o vencedor aquele que tiver mais peças no tabuleiro com a sua cor voltada para cima, adicionando os pontos relativos aos bónus capturados.
+Os jogadores jogam alternadamente, começando o jogador de cor preta. Em cada jogada, o jogador posiciona uma peça num espaço vazio ou bónus, adjacente a uma peça do adversário.
+As peças do adversário que fiquem delimitadas numa linha contígua pela nova peça e por outra peça do jogador atual ou joker, seja na diagonal, vertical ou horizontal, são viradas ao contrário, ficando da cor do jogador atual. 
+Uma jogada válida tem que fazer com que pelo menos uma peça do adversário seja virada. Se o jogador não conseguir realizar uma jogada válida, passa a vez.
+O jogo termina quando nenhum dos jogadores tem jogadas válidas. 
+São contados os pontos somando o número de peças que cada jogador tem no tabuleiro aos seus bónus, vencendo quem tiver mais pontos.
 
 * Fontes usadas para a recolha de informação:
   * [Página Oficial](https://nestorgames.com/#mapello_detail)
