@@ -26,6 +26,7 @@ game_loop(GameState, Player, BlackPoints, WhitePoints, P1, P2, Level):-
 	game_loop(GameState, NewPlayer, BlackPoints, WhitePoints, P1, P2, Level).
 
 game_loop(GameState, _, BlackPoints, WhitePoints, _, _, _):-
+	print_board(GameState),
 	game_over(GameState-BlackPoints-WhitePoints, Winner),
 	write('Game Over!\n'),
 	write(Winner).
@@ -36,6 +37,8 @@ game_over(GameState, Player, _):-
 
 game_over(GameState-BlackPoints-WhitePoints, Winner):-
 	get_total_points(GameState-BlackPoints-WhitePoints, TotalBp, TotalWp),
+	write('Final Points: '), nl,
+	display_points(TotalBp, TotalWp),nl,
 	get_winner(TotalBp, TotalWp, Winner).
 
 
@@ -46,39 +49,43 @@ get_total_points(GameState-BlackPoints-WhitePoints, TotalBp, TotalWp):-
 	TotalWp is WhitePoints + Wp.
 
 
-get_winner(TotalBp, TotalWp, Winner) :-
-	TotalBp > TotalWp,
-	Winner = 'Black Player has won!\n'.
+% get_winner(+TotalBlackPoints, +TotalWhitePoints, -WinnerMessage) - Gets the message for the winner by comparing the total points of the players
+get_winner(TotalBp, TotalWp, 'Black Player has won!\n') :-
+	TotalBp > TotalWp.
 
-get_winner(TotalBp, TotalWp, Winner) :-
-	TotalWp > TotalBp,
-	Winner = 'White Player has won!\n'.
+get_winner(TotalBp, TotalWp, 'White Player has won!\n') :-
+	TotalWp > TotalBp.
 
-get_winner(_, _, Winner) :-
-	Winner = 'It is a draw!\n'.
+get_winner(_, _, 'It is a draw!\n').
 
 
-% ask_move(-Row, -Col) - Gets Move from user input
+% ask_move(+GameState, +Player, +Player1Mode, +Player2Mode, +Level, -Row, -Col) - Gets Move from user input or from the computer
+
+% get move from the computer if the Player2 is a computer and it is is turn to play
 ask_move(GameState, -1, _, 'c', Level, Row, Col):-
-	write('\n Choose next move:\n'),
 	choose_move(GameState, -1, Level, [Row,Col]).
 
+% get move from the computer if the Player1 is a computer and it is is turn to play
 ask_move(GameState, 1, 'c', _, Level, Row, Col):-
-	write('\n Choose next move:\n'),
 	choose_move(GameState, 1, Level, [Row,Col]).
 
+% ask move if the user is the one playing
 ask_move(_, _ , _, _, _, Row, Col):-
 	write('\n Choose next move:\n'),
 	ask_row(Row),
 	ask_col(Col).
 
 
-% choose_move(+GameState, +Player, +Level, -Move)
+% choose_move(+GameState, +Player, +Level, -Move) - Gets the Move from the computer depending on the level
 choose_move(GameState, Player, 1, [Row,Col]):-
+	% get the move that turns less pieces if the level is 1
 	valid_moves(GameState, Player, [_-Row-Col|_]).
+
 choose_move(GameState, Player, 2, [Row,Col]):-
 	valid_moves(GameState, Player, ListOfMoves),
+	% get the move that turns more pieces if the level is 2
 	last(ListOfMoves, _-Row-Col).
+
 
 % move(+GameState, +Move, -NewGameState) - Validates and executes a move, returning the new game state
 move(GameState, [Player, Row, Col, BlackPoints, WhitePoints, NewBP, NewWP], NewGameState):-
@@ -107,7 +114,7 @@ within_limits(Row, Col):-
 	Row > 0, Row < 9,
 	Col > 0, Col < 9.
 
-
+% value(+GameState, +Player, -Value) - evaluate GameState: get number of valid moves the Player
 value(GameState, Player, Value):-
 	valid_moves(GameState, Player, ListOfMoves),
 	length(ListOfMoves, Value).
@@ -126,8 +133,9 @@ valid_moves(GameState, Player, ListOfMoves):-
 	sort(ListOfMovesU, ListOfMoves).
 
 
-/* valid_move(+GameState, +Player, +Move) - 
-Check if a move is valid: 
+/* valid_move(+GameState, +Player, +Move, -WouldTurn) - 
+Check if a move is valid and return the pieces that it turns.
+A Move is valid if:
 1. the cell is empty or has a bonus
 2. the cell has an opponent's piece adjacent to it
 3. placing the cell will turn at least one piece
@@ -174,6 +182,7 @@ would_turn(GameState, Row, Col, PlayerPiece, OpponentPiece, WouldTurn):-
 	would_turn_bottom_left(GameState, Row, Col, PlayerPiece, OpponentPiece, [], WouldTurnBL),
 	append([WouldTurnR, WouldTurnL, WouldTurnT, WouldTurnB, WouldTurnTR, WouldTurnTL, WouldTurnBR, WouldTurnBL], WouldTurn).
 
+
 /* would_turn_right(+GameState, +Row, +Col, +PlayerPiece, +OpponentPiece, -WouldTurn) - 
 get all the cells that would be turned on the right of [Row,Col] */
 would_turn_right(GameState, Row, Col, PlayerPiece, OpponentPiece, Acc, WouldTurn):-
@@ -184,15 +193,16 @@ would_turn_right(GameState, Row, Col, PlayerPiece, OpponentPiece, Acc, WouldTurn
 	% check right pieces
 	would_turn_right(GameState, Row, Right, PlayerPiece, OpponentPiece, NewAcc, WouldTurn).
 
-would_turn_right(GameState, Row, Col, PlayerPiece, _, Acc, WouldTurn):-
+would_turn_right(GameState, Row, Col, PlayerPiece, _, Acc, Acc):-
 	% check right for a joker or player piece
 	(check_right(GameState, Row, Col, joker);
-	check_right(GameState, Row, Col, PlayerPiece)),
-	WouldTurn = Acc.
+	check_right(GameState, Row, Col, PlayerPiece)).
 
-would_turn_right(_, _, _, _, _, _, WouldTurn):-
+would_turn_right(GameState, Row, Col, _, _, _, []):-
 	% right is a wall, bonus or empty
-	WouldTurn = [].
+	check_right(GameState, Row, Col, empty);
+	check_right(GameState, Row, Col, wall);
+	check_right(GameState, Row, Col, bonus).
 
 
 /* would_turn_left(+GameState, +Row, +Col, +PlayerPiece, +OpponentPiece, -WouldTurn) - 
@@ -205,15 +215,16 @@ would_turn_left(GameState, Row, Col, PlayerPiece, OpponentPiece, Acc, WouldTurn)
 	% check left pieces
 	would_turn_left(GameState, Row, Left, PlayerPiece, OpponentPiece, NewAcc, WouldTurn).
 
-would_turn_left(GameState, Row, Col, PlayerPiece, _, Acc, WouldTurn):-
+would_turn_left(GameState, Row, Col, PlayerPiece, _, Acc, Acc):-
 	% check left for a joker or player piece
 	(check_left(GameState, Row, Col, joker);
-	check_left(GameState, Row, Col, PlayerPiece)),
-	WouldTurn = Acc.
+	check_left(GameState, Row, Col, PlayerPiece)).
 
-would_turn_left(_, _, _, _, _, _, WouldTurn):-
+would_turn_left(GameState, Row, Col, _, _, _,[]):-
 	% left is a wall, bonus or empty
-	WouldTurn = [].
+	check_left(GameState, Row, Col, empty);
+	check_left(GameState, Row, Col, bonus);
+	check_left(GameState, Row, Col, wall).
 
 
 /* would_turn_top(+GameState, +Row, +Col, +PlayerPiece, +OpponentPiece, -WouldTurn) - 
@@ -226,15 +237,16 @@ would_turn_top(GameState, Row, Col, PlayerPiece, OpponentPiece, Acc, WouldTurn):
 	% check top pieces
 	would_turn_top(GameState, Top, Col, PlayerPiece, OpponentPiece, NewAcc, WouldTurn).
 
-would_turn_top(GameState, Row, Col, PlayerPiece, _, Acc, WouldTurn):-
+would_turn_top(GameState, Row, Col, PlayerPiece, _, Acc, Acc):-
 	% check top for a joker or player piece
 	(check_top(GameState, Row, Col, joker);
-	check_top(GameState, Row, Col, PlayerPiece)),
-	WouldTurn = Acc.
+	check_top(GameState, Row, Col, PlayerPiece)).
 
-would_turn_top(_, _, _, _, _, _, WouldTurn):-
+would_turn_top(GameState, Row, Col, _, _, _, []):-
 	% top is a wall, bonus or empty
-	WouldTurn = [].
+	check_top(GameState, Row, Col, empty);
+	check_top(GameState, Row, Col, bonus);
+	check_top(GameState, Row, Col, wall).
 
 
 /* would_turn_bottom(+GameState, +Row, +Col, +PlayerPiece, +OpponentPiece, -WouldTurn) - 
@@ -247,15 +259,16 @@ would_turn_bottom(GameState, Row, Col, PlayerPiece, OpponentPiece, Acc, WouldTur
 	% check bottom pieces
 	would_turn_bottom(GameState, Bottom, Col, PlayerPiece, OpponentPiece, NewAcc, WouldTurn).
 
-would_turn_bottom(GameState, Row, Col, PlayerPiece, _, Acc, WouldTurn):-
+would_turn_bottom(GameState, Row, Col, PlayerPiece, _, Acc, Acc):-
 	% check bottom for a joker or player piece
 	(check_bottom(GameState, Row, Col, joker);
-	check_bottom(GameState, Row, Col, PlayerPiece)),
-	WouldTurn = Acc.
+	check_bottom(GameState, Row, Col, PlayerPiece)).
 
-would_turn_bottom(_, _, _, _, _, _, WouldTurn):-
+would_turn_bottom(GameState, Row, Col, _, _, _, []):-
 	% bottom is a wall, bonus or empty
-	WouldTurn = [].
+	check_bottom(GameState, Row, Col, empty);
+	check_bottom(GameState, Row, Col, bonus);
+	check_bottom(GameState, Row, Col, wall).
 
 
 /* would_turn_top_right(+GameState, +Row, +Col, +PlayerPiece, +OpponentPiece, -WouldTurn) - 
@@ -269,15 +282,16 @@ would_turn_top_right(GameState, Row, Col, PlayerPiece, OpponentPiece, Acc, Would
 	% check top_right pieces
 	would_turn_top_right(GameState, Top, Right, PlayerPiece, OpponentPiece, NewAcc, WouldTurn).
 
-would_turn_top_right(GameState, Row, Col, PlayerPiece, _, Acc, WouldTurn):-
+would_turn_top_right(GameState, Row, Col, PlayerPiece, _, Acc, Acc):-
 	% check top_right for a joker or player piece
 	(check_top_right(GameState, Row, Col, joker);
-	check_top_right(GameState, Row, Col, PlayerPiece)),
-	WouldTurn = Acc.
+	check_top_right(GameState, Row, Col, PlayerPiece)).
 
-would_turn_top_right(_, _, _, _, _, _, WouldTurn):-
+would_turn_top_right(GameState, Row, Col, _, _, _, []):-
 	% top_right is a wall, bonus or empty
-	WouldTurn = [].
+	check_top_right(GameState, Row, Col, empty);
+	check_top_right(GameState, Row, Col, bonus);
+	check_top_right(GameState, Row, Col, wall).
 
 
 /* would_turn_top_left(+GameState, +Row, +Col, +PlayerPiece, +OpponentPiece, -WouldTurn) - 
@@ -291,15 +305,16 @@ would_turn_top_left(GameState, Row, Col, PlayerPiece, OpponentPiece, Acc, WouldT
 	% check top_left pieces
 	would_turn_top_left(GameState, Top, Left, PlayerPiece, OpponentPiece, NewAcc, WouldTurn).
 
-would_turn_top_left(GameState, Row, Col, PlayerPiece, _, Acc, WouldTurn):-
+would_turn_top_left(GameState, Row, Col, PlayerPiece, _, Acc, Acc):-
 	% check top_left for a joker or player piece
 	(check_top_left(GameState, Row, Col, joker);
-	check_top_left(GameState, Row, Col, PlayerPiece)),
-	WouldTurn = Acc.
+	check_top_left(GameState, Row, Col, PlayerPiece)).
 
-would_turn_top_left(_, _, _, _, _, _, WouldTurn):-
+would_turn_top_left(GameState, Row, Col, _, _, _, []):-
 	% top_left is a wall, bonus or empty
-	WouldTurn = [].
+	check_top_left(GameState, Row, Col, empty);
+	check_top_left(GameState, Row, Col, bonus);
+	check_top_left(GameState, Row, Col, wall).
 
 
 /* would_turn_bottom_right(+GameState, +Row, +Col, +PlayerPiece, +OpponentPiece, -WouldTurn) - 
@@ -313,15 +328,17 @@ would_turn_bottom_right(GameState, Row, Col, PlayerPiece, OpponentPiece, Acc, Wo
 	% check bottom_right pieces
 	would_turn_bottom_right(GameState, Bottom, Right, PlayerPiece, OpponentPiece, NewAcc, WouldTurn).
 
-would_turn_bottom_right(GameState, Row, Col, PlayerPiece, _, Acc, WouldTurn):-
+would_turn_bottom_right(GameState, Row, Col, PlayerPiece, _, Acc, Acc):-
 	% check bottom_right for a joker or player piece
 	(check_bottom_right(GameState, Row, Col, joker);
-	check_bottom_right(GameState, Row, Col, PlayerPiece)),
-	WouldTurn = Acc.
+	check_bottom_right(GameState, Row, Col, PlayerPiece)).
 
-would_turn_bottom_right(_, _, _, _, _, _, WouldTurn):-
+would_turn_bottom_right(GameState, Row, Col, _, _, _, []):-
 	% bottom_right is a wall, bonus or empty
-	WouldTurn = [].
+	check_bottom_right(GameState, Row, Col, empty);
+	check_bottom_right(GameState, Row, Col, bonus);
+	check_bottom_right(GameState, Row, Col, wall).
+
 
 /* would_turn_bottom_left(+GameState, +Row, +Col, +PlayerPiece, +OpponentPiece, -WouldTurn) - 
 get all the cells that would be turned on the bottom_left of [Row,Col] */
@@ -334,15 +351,16 @@ would_turn_bottom_left(GameState, Row, Col, PlayerPiece, OpponentPiece, Acc, Wou
 	% check bottom_left pieces
 	would_turn_bottom_left(GameState, Bottom, Left, PlayerPiece, OpponentPiece, NewAcc, WouldTurn).
 
-would_turn_bottom_left(GameState, Row, Col, PlayerPiece, _, Acc, WouldTurn):-
+would_turn_bottom_left(GameState, Row, Col, PlayerPiece, _, Acc, Acc):-
 	% check bottom_left for a joker or player piece
 	(check_bottom_left(GameState, Row, Col, joker);
-	check_bottom_left(GameState, Row, Col, PlayerPiece)),
-	WouldTurn = Acc.
+	check_bottom_left(GameState, Row, Col, PlayerPiece)).
 
-would_turn_bottom_left(_, _, _, _, _, _, WouldTurn):-
+would_turn_bottom_left(GameState, Row, Col, _, _, _, []):-
 	% bottom left is a wall, bonus or empty
-	WouldTurn = [].
+	check_bottom_left(GameState, Row, Col, empty);
+	check_bottom_left(GameState, Row, Col, bonus);
+	check_bottom_left(GameState, Row, Col, wall).
 
 
 /* turn_pieces(+GameState, +WouldTurn, +Piece, -NewGameState) - 

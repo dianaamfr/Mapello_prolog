@@ -1,3 +1,4 @@
+% Set/Check Values in Matrix/Line
 % get_list_value(+List, +Pos, -Value) - Get the Value of the element at index Pos of the List 
 get_list_value([Value|_], 0, Value).
 
@@ -33,16 +34,6 @@ set_matrix_value([H|T], Row, Col, Value, [H|R]) :-
     Row > 0,
     Row1 is Row - 1,
     set_matrix_value(T, Row1, Col, Value, R).
-
-
-% get_sublist(+List, +From, +To, -SubList) - Get a sublist = list[From, To]
-get_sublist(List, From, To, SubList) :- 	
-    findall(Cell, (nth0(Pos, List, Cell), Pos >= From, Pos =< To), SubList).
-
-
-% get_col(+ColNumber, +Matrix, -Col) - Get column ColNumber from a matrix
-get_col(ColNumber, Matrix, Col) :-
-    maplist(nth0(ColNumber), Matrix, Col).
 
 
 % Verify adjacent cell

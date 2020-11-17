@@ -38,20 +38,17 @@ initial(user, Board) :-
 % place_joker(+Board, -NewBoard) - Places the Jokers in the Board and returns the NewBoard
 place_jokers(Board, NewBoard):-
     ask_number(N, 'jokers'),
-    Message = '\nNote: Jokers must be placed on the boundary walls!\n',
-    place_loop(Board, NewBoard, N, Message, joker).
+    place_loop(Board, NewBoard, N, '\nNote: Jokers must be placed on the boundary walls!\n', joker).
 
 % place_walls(+Board, -NewBoard) - Places the Walls in the Board and returns the NewBoard
 place_walls(Board, NewBoard):-
     ask_number(N, 'walls'),
-    Message = '\nNote: Walls must be placed in empty cells!\n',
-    place_loop(Board, NewBoard, N, Message, wall).
+    place_loop(Board, NewBoard, N, '\nNote: Walls must be placed in empty cells!\n', wall).
 
 % place_bonus(+Board, -NewBoard) - Places the Bonus in the Board and returns the NewBoard
 place_bonus(Board, NewBoard):-
     ask_number(N, 'bonus'),
-    Message = '\nNote: Bonus must be placed in empty cells!\n',
-    place_loop(Board, NewBoard, N, Message, bonus).
+    place_loop(Board, NewBoard, N, '\nNote: Bonus must be placed in empty cells!\n', bonus).
 
 
 % ask_number(-Number, +Piece) - Prompts the user for the number of pieces of type Piece that he wants to place
