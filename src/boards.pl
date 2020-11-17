@@ -1,4 +1,5 @@
 :- consult('random.pl').
+:- use_module(library(random)).
 
 % Initial Boards
 
@@ -60,9 +61,8 @@ ask_number(Number, Piece):-
 
 % validate_number(+Number, +Piece) - Checks if the number of pieces respects Mapello's rules - max 8 pieces 
 validate_number(Number, Number, _):-
-	integer(Number),
-	Number >= 0,
-	Number =< 8.
+    integer(Number),
+    between(0, 8, Number).
 validate_number(_, Number, Piece) :-
     write('ERROR: Invalid number!\n\n'),
     ask_number(Number, Piece).

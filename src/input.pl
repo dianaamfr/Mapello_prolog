@@ -1,3 +1,5 @@
+:-use_module(library(between)).
+
 ask_row(Row):-
 	write('=> Row '),
 	read(Input),
@@ -5,8 +7,7 @@ ask_row(Row):-
 
 validate_row(Input, Row):-
 	letter(Row, Input),
-	Row >= 0,
-	Row =< 9.
+	between(0, 9, Row).
 
 validate_row(_, Row) :-
     write('ERROR: Invalid row!\n\n'),
@@ -19,8 +20,7 @@ ask_col(Col):-
 
 validate_col(Input, Input):-
 	integer(Input),
-	Input >= 0,
-	Input =< 9.
+	between(0, 9, Input).
 	
 validate_col(_, Col) :-
     write('ERROR: Invalid Column!\n\n'),

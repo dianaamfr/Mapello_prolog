@@ -1,5 +1,6 @@
 :- consult('input.pl').
 :- consult('utils.pl').
+:- use_module(library(random)).
 
 % player_piece(?Piece, ?Player) - Associates a Piece to its Player
 player_piece(black, 1).
@@ -9,23 +10,23 @@ player_piece(white, -1).
 opponent_piece(white, 1).
 opponent_piece(black, -1).
 
-game_loop(GameState, P1, P2, Level):- game_loop(GameState, 1, 0, 0, P1, P2, Level).
+game_loop(GameState, P1, P2):- game_loop(GameState, 1, 0, 0, P1, P2).
 
-game_loop(GameState, Player, BlackPoints, WhitePoints, P1, P2, Level):-
+game_loop(GameState, Player, BlackPoints, WhitePoints, P1, P2):-
 	\+game_over(GameState, Player, _),
 	display_game(GameState, Player),
 	display_points(BlackPoints, WhitePoints),
-	catch(ask_move(GameState, Player, P1, P2, Level, Row, Col),_,ask_move(GameState, Player, P1, P2, Level, Row, Col)),
+	catch(ask_move(GameState, Player, P1, P2, Row, Col),_,ask_move(GameState, Player, P1, P2, Row, Col)),
 	move(GameState, [Player, Row, Col, BlackPoints, WhitePoints, NewBP, NewWP], NewGameState),
 	NewPlayer is -Player, 
-	game_loop(NewGameState, NewPlayer, NewBP, NewWP, P1, P2, Level).
+	game_loop(NewGameState, NewPlayer, NewBP, NewWP, P1, P2).
 
-game_loop(GameState, Player, BlackPoints, WhitePoints, P1, P2, Level):-
+game_loop(GameState, Player, BlackPoints, WhitePoints, P1, P2):-
 	NewPlayer is -Player,
 	\+game_over(GameState, NewPlayer, _),
-	game_loop(GameState, NewPlayer, BlackPoints, WhitePoints, P1, P2, Level).
+	game_loop(GameState, NewPlayer, BlackPoints, WhitePoints, P1, P2).
 
-game_loop(GameState, _, BlackPoints, WhitePoints, _, _, _):-
+game_loop(GameState, _Player, BlackPoints, WhitePoints, _P1, _P2):-
 	print_board(GameState),
 	game_over(GameState-BlackPoints-WhitePoints, Winner),
 	write('Game Over!\n'),
@@ -59,18 +60,20 @@ get_winner(TotalBp, TotalWp, 'White Player has won!\n') :-
 get_winner(_, _, 'It is a draw!\n').
 
 
-% ask_move(+GameState, +Player, +Player1Mode, +Player2Mode, +Level, -Row, -Col) - Gets Move from user input or from the computer
+% ask_move(+GameState, +Player, +Player1Mode, +Player2Mode, -Row, -Col) - Gets Move from user input or from the computer
 
 % get move from the computer if the Player2 is a computer and it is is turn to play
-ask_move(GameState, -1, _, 'c', Level, Row, Col):-
-	choose_move(GameState, -1, Level, [Row,Col]).
+ask_move(GameState, -1, _P1, P2, Row, Col):-
+	P2 > 0, !,
+	choose_move(GameState, -1, P2, [Row,Col]).
 
 % get move from the computer if the Player1 is a computer and it is is turn to play
-ask_move(GameState, 1, 'c', _, Level, Row, Col):-
-	choose_move(GameState, 1, Level, [Row,Col]).
+ask_move(GameState, 1, P1, _P2, Row, Col):-
+	P1 > 0, !,
+	choose_move(GameState, 1, P1, [Row,Col]).
 
 % ask move if the user is the one playing
-ask_move(_, _ , _, _, _, Row, Col):-
+ask_move(_GameState, _Player , _P1, _P2, Row, Col):-
 	write('\n Choose next move:\n'),
 	ask_row(Row),
 	ask_col(Col).
@@ -78,8 +81,9 @@ ask_move(_, _ , _, _, _, Row, Col):-
 
 % choose_move(+GameState, +Player, +Level, -Move) - Gets the Move from the computer depending on the level
 choose_move(GameState, Player, 1, [Row,Col]):-
-	% get the move that turns less pieces if the level is 1
-	valid_moves(GameState, Player, [_-Row-Col|_]).
+	valid_moves(GameState, Player, ListOfMoves),
+	% get a random valid move
+	random_member(_-Row-Col, ListOfMoves).
 
 choose_move(GameState, Player, 2, [Row,Col]):-
 	valid_moves(GameState, Player, ListOfMoves),
@@ -92,7 +96,7 @@ move(GameState, [Player, Row, Col, BlackPoints, WhitePoints, NewBP, NewWP], NewG
 	% cell is within limits
 	within_limits(Row, Col),
 	% validate the move
-	valid_move(GameState, Player, Row, Col, _-WouldTurn),
+	valid_move(GameState, Player, Row, Col, _-WouldTurn), !,
 	% get the piece to be moved
 	player_piece(Piece, Player),
 	% place the piece
@@ -105,7 +109,7 @@ move(GameState, [Player, Row, Col, BlackPoints, WhitePoints, NewBP, NewWP], NewG
 % If move is invalid then ask for another
 move(GameState, [Player, _, _, BlackPoints, WhitePoints, NewBP, NewWP], NewGameState):-
 	write('\n ERROR: Invalid move!\n'),
-	catch(ask_move(GameState, Player, 'u', 'u', _, Row, Col),_,ask_move(GameState,Player,'u', 'u', _, Row, Col)),
+	catch(ask_move(GameState, Player, 0, 0, Row, Col),_,ask_move(GameState,Player,0, 0, Row, Col)),
 	move(GameState, [Player, Row, Col, BlackPoints, WhitePoints, NewBP, NewWP], NewGameState).
 
 
