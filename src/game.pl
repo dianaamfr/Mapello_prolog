@@ -187,7 +187,7 @@ would_turn(GameState, Row, Col, PlayerPiece, OpponentPiece, WouldTurn):-
 get all the cells that would be turned on the right of [Row,Col] */
 would_turn_right(GameState, Row, Col, PlayerPiece, OpponentPiece, Acc, WouldTurn):-
 	% check right for an opponent
-	check_right(GameState, Row, Col, OpponentPiece),
+	check_right(GameState, Row, Col, [OpponentPiece]),
 	Right is Col + 1, Right =< 9,
 	append(Acc, [[Row, Right]], NewAcc),
 	% check right pieces
@@ -195,21 +195,18 @@ would_turn_right(GameState, Row, Col, PlayerPiece, OpponentPiece, Acc, WouldTurn
 
 would_turn_right(GameState, Row, Col, PlayerPiece, _, Acc, Acc):-
 	% check right for a joker or player piece
-	(check_right(GameState, Row, Col, joker);
-	check_right(GameState, Row, Col, PlayerPiece)).
+	check_right(GameState, Row, Col, [joker, PlayerPiece]).
 
 would_turn_right(GameState, Row, Col, _, _, _, []):-
 	% right is a wall, bonus or empty
-	check_right(GameState, Row, Col, empty);
-	check_right(GameState, Row, Col, wall);
-	check_right(GameState, Row, Col, bonus).
+	check_right(GameState, Row, Col, [empty, wall, bonus]).
 
 
 /* would_turn_left(+GameState, +Row, +Col, +PlayerPiece, +OpponentPiece, -WouldTurn) - 
 get all the cells that would be turned on the left of [Row,Col] */
 would_turn_left(GameState, Row, Col, PlayerPiece, OpponentPiece, Acc, WouldTurn):-
 	% check left for an opponent
-	check_left(GameState, Row, Col, OpponentPiece),
+	check_left(GameState, Row, Col, [OpponentPiece]),
 	Left is Col - 1, Left >= 0,
 	append(Acc, [[Row, Left]], NewAcc),
 	% check left pieces
@@ -217,21 +214,18 @@ would_turn_left(GameState, Row, Col, PlayerPiece, OpponentPiece, Acc, WouldTurn)
 
 would_turn_left(GameState, Row, Col, PlayerPiece, _, Acc, Acc):-
 	% check left for a joker or player piece
-	(check_left(GameState, Row, Col, joker);
-	check_left(GameState, Row, Col, PlayerPiece)).
+	check_left(GameState, Row, Col, [joker, PlayerPiece]).
 
 would_turn_left(GameState, Row, Col, _, _, _,[]):-
 	% left is a wall, bonus or empty
-	check_left(GameState, Row, Col, empty);
-	check_left(GameState, Row, Col, bonus);
-	check_left(GameState, Row, Col, wall).
+	check_left(GameState, Row, Col, [empty, wall, bonus]).
 
 
 /* would_turn_top(+GameState, +Row, +Col, +PlayerPiece, +OpponentPiece, -WouldTurn) - 
 get all the cells that would be turned on the top of [Row,Col] */
 would_turn_top(GameState, Row, Col, PlayerPiece, OpponentPiece, Acc, WouldTurn):-
 	% check top for an opponent
-	check_top(GameState, Row, Col, OpponentPiece),
+	check_top(GameState, Row, Col, [OpponentPiece]),
 	Top is Row - 1, Top >= 0,
 	append(Acc, [[Top, Col]], NewAcc),
 	% check top pieces
@@ -239,21 +233,17 @@ would_turn_top(GameState, Row, Col, PlayerPiece, OpponentPiece, Acc, WouldTurn):
 
 would_turn_top(GameState, Row, Col, PlayerPiece, _, Acc, Acc):-
 	% check top for a joker or player piece
-	(check_top(GameState, Row, Col, joker);
-	check_top(GameState, Row, Col, PlayerPiece)).
+	check_top(GameState, Row, Col, [joker, PlayerPiece]).
 
 would_turn_top(GameState, Row, Col, _, _, _, []):-
 	% top is a wall, bonus or empty
-	check_top(GameState, Row, Col, empty);
-	check_top(GameState, Row, Col, bonus);
-	check_top(GameState, Row, Col, wall).
-
+	check_top(GameState, Row, Col, [empty, wall, bonus]).
 
 /* would_turn_bottom(+GameState, +Row, +Col, +PlayerPiece, +OpponentPiece, -WouldTurn) - 
 get all the cells that would be turned on the bottom of [Row,Col] */
 would_turn_bottom(GameState, Row, Col, PlayerPiece, OpponentPiece, Acc, WouldTurn):-
 	% check bottom for an opponent
-	check_bottom(GameState, Row, Col, OpponentPiece),
+	check_bottom(GameState, Row, Col, [OpponentPiece]),
 	Bottom is Row + 1, Bottom =< 9,
 	append(Acc, [[Bottom, Col]], NewAcc),
 	% check bottom pieces
@@ -261,21 +251,18 @@ would_turn_bottom(GameState, Row, Col, PlayerPiece, OpponentPiece, Acc, WouldTur
 
 would_turn_bottom(GameState, Row, Col, PlayerPiece, _, Acc, Acc):-
 	% check bottom for a joker or player piece
-	(check_bottom(GameState, Row, Col, joker);
-	check_bottom(GameState, Row, Col, PlayerPiece)).
+	check_bottom(GameState, Row, Col, [joker, PlayerPiece]).
 
 would_turn_bottom(GameState, Row, Col, _, _, _, []):-
 	% bottom is a wall, bonus or empty
-	check_bottom(GameState, Row, Col, empty);
-	check_bottom(GameState, Row, Col, bonus);
-	check_bottom(GameState, Row, Col, wall).
+	check_bottom(GameState, Row, Col, [empty, wall, bonus]).
 
 
 /* would_turn_top_right(+GameState, +Row, +Col, +PlayerPiece, +OpponentPiece, -WouldTurn) - 
 get all the cells that would be turned on the top_right of [Row,Col] */
 would_turn_top_right(GameState, Row, Col, PlayerPiece, OpponentPiece, Acc, WouldTurn):-
 	% check top_right for an opponent
-	check_top_right(GameState, Row, Col, OpponentPiece),
+	check_top_right(GameState, Row, Col, [OpponentPiece]),
 	Top is Row - 1, Top >= 0,
 	Right is Col + 1, Right =< 9,
 	append(Acc, [[Top, Right]], NewAcc),
@@ -284,21 +271,18 @@ would_turn_top_right(GameState, Row, Col, PlayerPiece, OpponentPiece, Acc, Would
 
 would_turn_top_right(GameState, Row, Col, PlayerPiece, _, Acc, Acc):-
 	% check top_right for a joker or player piece
-	(check_top_right(GameState, Row, Col, joker);
-	check_top_right(GameState, Row, Col, PlayerPiece)).
+	check_top_right(GameState, Row, Col, [joker, PlayerPiece]).
 
 would_turn_top_right(GameState, Row, Col, _, _, _, []):-
 	% top_right is a wall, bonus or empty
-	check_top_right(GameState, Row, Col, empty);
-	check_top_right(GameState, Row, Col, bonus);
-	check_top_right(GameState, Row, Col, wall).
+	check_top_right(GameState, Row, Col, [empty, wall, bonus]).
 
 
 /* would_turn_top_left(+GameState, +Row, +Col, +PlayerPiece, +OpponentPiece, -WouldTurn) - 
 get all the cells that would be turned on the top_left of [Row,Col] */
 would_turn_top_left(GameState, Row, Col, PlayerPiece, OpponentPiece, Acc, WouldTurn):-
 	% check top_left for an opponent
-	check_top_left(GameState, Row, Col, OpponentPiece),
+	check_top_left(GameState, Row, Col, [OpponentPiece]),
 	Top is Row - 1, Top >= 0,
 	Left is Col - 1, Left >= 0,
 	append(Acc, [[Top, Left]], NewAcc),
@@ -307,21 +291,18 @@ would_turn_top_left(GameState, Row, Col, PlayerPiece, OpponentPiece, Acc, WouldT
 
 would_turn_top_left(GameState, Row, Col, PlayerPiece, _, Acc, Acc):-
 	% check top_left for a joker or player piece
-	(check_top_left(GameState, Row, Col, joker);
-	check_top_left(GameState, Row, Col, PlayerPiece)).
+	check_top_left(GameState, Row, Col, [joker, PlayerPiece]).
 
 would_turn_top_left(GameState, Row, Col, _, _, _, []):-
 	% top_left is a wall, bonus or empty
-	check_top_left(GameState, Row, Col, empty);
-	check_top_left(GameState, Row, Col, bonus);
-	check_top_left(GameState, Row, Col, wall).
+	check_top_left(GameState, Row, Col, [empty, wall, bonus]).
 
 
 /* would_turn_bottom_right(+GameState, +Row, +Col, +PlayerPiece, +OpponentPiece, -WouldTurn) - 
 get all the cells that would be turned on the bottom_right of [Row,Col] */
 would_turn_bottom_right(GameState, Row, Col, PlayerPiece, OpponentPiece, Acc, WouldTurn):-
 	% check bottom_right for an opponent
-	check_bottom_right(GameState, Row, Col, OpponentPiece),
+	check_bottom_right(GameState, Row, Col, [OpponentPiece]),
 	Bottom is Row + 1, Bottom =< 9,
 	Right is Col + 1, Right =< 9,
 	append(Acc, [[Bottom, Right]], NewAcc),
@@ -330,21 +311,18 @@ would_turn_bottom_right(GameState, Row, Col, PlayerPiece, OpponentPiece, Acc, Wo
 
 would_turn_bottom_right(GameState, Row, Col, PlayerPiece, _, Acc, Acc):-
 	% check bottom_right for a joker or player piece
-	(check_bottom_right(GameState, Row, Col, joker);
-	check_bottom_right(GameState, Row, Col, PlayerPiece)).
+	check_bottom_right(GameState, Row, Col, [joker, PlayerPiece]).
 
 would_turn_bottom_right(GameState, Row, Col, _, _, _, []):-
 	% bottom_right is a wall, bonus or empty
-	check_bottom_right(GameState, Row, Col, empty);
-	check_bottom_right(GameState, Row, Col, bonus);
-	check_bottom_right(GameState, Row, Col, wall).
+	check_bottom_right(GameState, Row, Col, [empty, bonus, wall]).
 
 
 /* would_turn_bottom_left(+GameState, +Row, +Col, +PlayerPiece, +OpponentPiece, -WouldTurn) - 
 get all the cells that would be turned on the bottom_left of [Row,Col] */
 would_turn_bottom_left(GameState, Row, Col, PlayerPiece, OpponentPiece, Acc, WouldTurn):-
 	% check bottom_left for an opponent
-	check_bottom_left(GameState, Row, Col, OpponentPiece),
+	check_bottom_left(GameState, Row, Col, [OpponentPiece]),
 	Bottom is Row + 1, Bottom =< 9,
 	Left is Col - 1, Left >= 0,
 	append(Acc, [[Bottom, Left]], NewAcc),
@@ -353,14 +331,11 @@ would_turn_bottom_left(GameState, Row, Col, PlayerPiece, OpponentPiece, Acc, Wou
 
 would_turn_bottom_left(GameState, Row, Col, PlayerPiece, _, Acc, Acc):-
 	% check bottom_left for a joker or player piece
-	(check_bottom_left(GameState, Row, Col, joker);
-	check_bottom_left(GameState, Row, Col, PlayerPiece)).
+	check_bottom_left(GameState, Row, Col, [joker, PlayerPiece]).
 
 would_turn_bottom_left(GameState, Row, Col, _, _, _, []):-
 	% bottom left is a wall, bonus or empty
-	check_bottom_left(GameState, Row, Col, empty);
-	check_bottom_left(GameState, Row, Col, bonus);
-	check_bottom_left(GameState, Row, Col, wall).
+	check_bottom_left(GameState, Row, Col, [empty, wall, bonus]).
 
 
 /* turn_pieces(+GameState, +WouldTurn, +Piece, -NewGameState) - 
