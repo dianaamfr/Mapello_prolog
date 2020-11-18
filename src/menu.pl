@@ -1,29 +1,33 @@
 % menu - prints the main menu of the game and asks for the game mode
 menu:-
     print_menu,
+    repeat,
     write('=> Insert Option '),
-    read(Input),
+    get_code(C), Input is C - 48,
     handle_menu_option(Input).
 
 % setup_menu(+SetupMenu , -Mode) - prints the menu with initial board setup options and returns de chosen setup mode
 setup_menu(SetupMenu, Mode) :-
     print_setup_menu(SetupMenu),
+    repeat,
     write('=> Insert Option '),
-    read(Input),
+    get_int(Input),
     handle_setup_option(Input, SetupMenu, Mode).
 
 % level_menu(-Level) - prints the level menu and asks for the level of the computer
 level_menu(Level) :-
     print_level_menu,
+    repeat,
     write('=> Insert Option '),
-    read(Input),
+    get_int(Input),
     handle_level_option(Input, Level).
 
 % level_menu2(-Level) - prints the level menu and asks for the level of both computers
 level_menu2(P1Level, P2Level) :-
     print_pc_level_menu,
+    repeat,
     write('=> Insert Option '),
-    read(Input),
+    get_int(Input),
     handle_pc_level_option(Input, P1Level, P2Level).
 
 
@@ -41,8 +45,9 @@ handle_menu_option(2):-
     write('\33\[2J'),
     % ask who plays first
     print_player_menu,
+    repeat,
     write('=> Insert Option '),
-    read(Input),
+    get_int(Input),
     handle_first_player(Input).
 
 % computer vs computer
@@ -52,30 +57,18 @@ handle_menu_option(3):-
     write('\33\[2J'),
     game_loop(GameMode, P1Level, P2Level).
 
-handle_menu_option(_Option):-
-    write('ERROR: Invalid Option!\n'),
-    write('=> Insert Option '),
-    read(Input),
-    handle_menu_option(Input).
+handle_menu_option(_Option):- write('ERROR: Invalid Option!\n'), fail.
 
 
 handle_level_option(1, 1).
 handle_level_option(2, 2). 
-handle_level_option(_, Level):-
-    write('ERROR: Invalid Option!\n'),
-    write('=> Insert Option '),
-    read(Input),
-    handle_setup_option(Input, Level).
+handle_level_option(_, _):- write('ERROR: Invalid Option!\n'), fail.
 
 handle_pc_level_option(1, 1, 1).
 handle_pc_level_option(2, 2, 2). 
 handle_pc_level_option(3, 1, 2).
 handle_pc_level_option(4, 2, 1). 
-handle_pc_level_option(_, P1Level, P2Level):-
-    write('ERROR: Invalid Option!\n'),
-    write('=> Insert Option '),
-    read(Input),
-    handle_pc_level_option(Input, P1Level, P2Level).
+handle_pc_level_option(_, _, _):- write('ERROR: Invalid Option!\n'), fail.
 
 
 % computer plays first
@@ -94,11 +87,7 @@ handle_first_player(2):-
     setup_menu(1, GameMode),
     game_loop(GameMode, 0, Level).
     
-handle_first_player(_Option):-
-    write('ERROR: Invalid Option!\n'),
-    write('=> Insert Option '),
-    read(Input),
-    handle_first_player(Input).
+handle_first_player(_Option):- write('ERROR: Invalid Option!\n'), fail.
 
 
 handle_setup_option(1, _SetupMenu, DefaultMode):- initial(DefaultMode).
@@ -106,11 +95,7 @@ handle_setup_option(1, _SetupMenu, DefaultMode):- initial(DefaultMode).
 handle_setup_option(2, _SetupMenu, RandomMode):- initial(random, RandomMode).
 
 handle_setup_option(3, 1, UserMode):- initial(user, UserMode).
-handle_setup_option(_Option, SetupMenu, Mode):-
-    write('ERROR: Invalid Option!\n'),
-    write('=> Insert Option '),
-    read(Input),
-    handle_setup_option(Input, SetupMenu, Mode).
+handle_setup_option(_, _, _):- write('ERROR: Invalid Option!\n'), fail.
 
 
 print_menu:-

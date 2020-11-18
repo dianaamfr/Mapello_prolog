@@ -1,7 +1,3 @@
-:- use_module(library(lists)).
-:- use_module(library(random)).
-
-
 % getElement(N, Id) - Gets an element by its numeric identifier(N)
 getElement(X,E) :- code(E,_,X). 
 

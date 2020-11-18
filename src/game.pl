@@ -1,7 +1,3 @@
-:- consult('input.pl').
-:- consult('utils.pl').
-:- use_module(library(random)).
-
 % player_piece(?Piece, ?Player) - Associates a Piece to its Player
 player_piece(black, 1).
 player_piece(white, -1).
@@ -16,7 +12,8 @@ game_loop(GameState, Player, BlackPoints, WhitePoints, P1, P2):-
 	\+game_over(GameState, Player, _),
 	display_game(GameState, Player),
 	display_points(BlackPoints, WhitePoints),
-	catch(ask_move(GameState, Player, P1, P2, Row, Col),_,ask_move(GameState, Player, P1, P2, Row, Col)),
+	repeat,
+	ask_move(GameState, Player, P1, P2, Row, Col),
 	move(GameState, [Player, Row, Col, BlackPoints, WhitePoints, NewBP, NewWP], NewGameState),
 	NewPlayer is -Player, 
 	game_loop(NewGameState, NewPlayer, NewBP, NewWP, P1, P2).
@@ -107,10 +104,7 @@ move(GameState, [Player, Row, Col, BlackPoints, WhitePoints, NewBP, NewWP], NewG
 	update_points(GameState, Row, Col, Player, BlackPoints, WhitePoints, NewBP, NewWP).
 
 % If move is invalid then ask for another
-move(GameState, [Player, _, _, BlackPoints, WhitePoints, NewBP, NewWP], NewGameState):-
-	write('\n ERROR: Invalid move!\n'),
-	catch(ask_move(GameState, Player, 0, 0, Row, Col),_,ask_move(GameState,Player,0, 0, Row, Col)),
-	move(GameState, [Player, Row, Col, BlackPoints, WhitePoints, NewBP, NewWP], NewGameState).
+move(_, _, _):- write('\n ERROR: Invalid move!\n'), fail.
 
 
 % within_limits(+Row, +Col) - Check if a cell is within the playable area
@@ -126,15 +120,17 @@ value(GameState, Player, Value):-
 
 % valid_moves(+GameState, +Player, -ListOfMoves) - Get the list of possible moves
 valid_moves(GameState, Player, ListOfMoves):-
-	L = [1,2,3,4,5,6,7,8],
-	findall(Val-Row-Col, 
-		(member(Row, L), member(Col, L), 
-		get_bonus_at(GameState,Row,Col,Bonus),
-		valid_move(GameState, Player, Row, Col, S-_), 
-		Val is S + Bonus), 
-		ListOfMoves1),
-	remove_dups(ListOfMoves1,ListOfMovesU),
-	sort(ListOfMovesU, ListOfMoves).
+	setof(Val-Row-Col, 
+		get_move(GameState, Player, Val-Row-Col), 
+		ListOfMoves), !.
+
+valid_moves(_, _, []).
+
+get_move(GameState, Player, Val-Row-Col):-
+	between(1,8,Row), between(1,8,Col),
+	get_bonus_at(GameState,Row,Col,Bonus),
+	valid_move(GameState, Player, Row, Col, S-_), 
+	Val is S + Bonus.
 
 
 /* valid_move(+GameState, +Player, +Move, -WouldTurn) - 

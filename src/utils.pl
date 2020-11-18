@@ -1,22 +1,11 @@
 % Set/Check Values in Matrix/Line
 % get_list_value(+List, +Pos, -Value) - Get the Value of the element at index Pos of the List 
-get_list_value([Value|_], 0, Value).
-
-get_list_value([_|T], Pos, Value) :-
-    Pos > 0,
-    Pos1 is Pos - 1,
-    get_list_value(T, Pos1, Value).
-
+get_list_value(L, Pos, Value) :- nth0(Pos,L,Value).
 
 % get_matrix_value(+List, +Row, +Col, -Value) - Get the Value of the element at cell [Row, Col] of the Matrix 
-get_matrix_value([H|_], 0, Col, Value) :-
-    get_list_value(H, Col, Value).
-
-get_matrix_value([_|T], Row, Col, Value) :-
-    Row > 0,
-    Row1 is Row - 1,
-    get_matrix_value(T, Row1, Col, Value).
-
+get_matrix_value(M, Row, Col, Value) :-
+    nth0(Row, M, L),
+    get_list_value(L, Col, Value).
 
 % set_list_value(+List, +Pos, +Value, -NewList) - Set the Value of the element at index Pos of the List 
 set_list_value([_|T], 0, Value, [Value|T]).
@@ -99,18 +88,14 @@ bonus_cell(Matrix, Row, Col):-
 	get_matrix_value(Matrix, Row, Col, Value),
 	Value == bonus.
 
-get_bonus_at(Matrix, Row, Col, Bonus):-
-    bonus_cell(Matrix, Row, Col),
-    Bonus is 3, !.
+get_bonus_at(Matrix, Row, Col, 3):-
+    bonus_cell(Matrix, Row, Col), !.
 
-get_bonus_at(_, _, _, Bonus):-
-    Bonus is 0, !.
-
+get_bonus_at(_, _, _, 0).
 
 count_pieces(GameState, Piece, N) :- 
-    L = [1,2,3,4,5,6,7,8],
 	findall(Row-Col, 
-		(member(Row, L), member(Col, L),
+		(between(1,8,Row), between(1,8,Col),
         get_matrix_value(GameState, Row, Col, Piece)), 
 		ListOfPieces),
     length(ListOfPieces, N).

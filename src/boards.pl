@@ -1,6 +1,3 @@
-:- consult('random.pl').
-:-use_module(library(between)).
-
 % Initial Boards
 
 % initial(-Board) -  Creates default initial board
@@ -54,18 +51,15 @@ place_bonus(Board, NewBoard):-
 
 % ask_number(-Number, +Piece) - Prompts the user for the number of pieces of type Piece that he wants to place
 ask_number(Number, Piece):-
+    repeat,
     format('\n=> Number of ~s (0 to 8) ', [Piece]),
-    read(Input),
+    get_int(Input),
     validate_number(Input, Number, Piece).
 
 
 % validate_number(+Number, +Piece) - Checks if the number of pieces respects Mapello's rules - max 8 pieces 
-validate_number(Number, Number, _):-
-    integer(Number),
-    between(0, 8, Number).
-validate_number(_, Number, Piece) :-
-    write('ERROR: Invalid number!\n\n'),
-    ask_number(Number, Piece).
+validate_number(Number, Number, _):- between(0, 8, Number).
+validate_number(_, _, _) :- write('ERROR: Invalid number!\n\n'), fail.
 
 
 % place_loop(+Board, -NewBoard, N, Message, Piece) - Loop to place N pieces of type Piece on the Board and return the NewBoard
@@ -75,6 +69,7 @@ place_loop(Board, NewBoard, N, Message, Piece) :-
     print_board(Board),
     write(Message),
     % Ask position to place the piece
+    repeat,
     format('Choose ~s position:\n', [Piece]),
     ask_row(Row),
     ask_col(Col),
@@ -102,13 +97,7 @@ place_piece(Board, Piece, ActualPiece, Row, Col, NewBoard):-
     ActualPiece == empty,
     set_matrix_value(Board, Row, Col, Piece, NewBoard).
 
-place_piece(Board, Piece, _, _, _, NewBoard):-
-    write('ERROR: Invalid position!\n'),
-    format('\nChoose ~s position:\n', [Piece]),
-    ask_row(Row),
-    ask_col(Col),
-    get_matrix_value(Board, Row, Col, ActualPiece),
-    place_piece(Board, Piece, ActualPiece, Row, Col, NewBoard).
+place_piece(_, _, _, _, _, _):- write('ERROR: Invalid position!\n'), fail.
 
 
 % empty(-Board) - Returns an empty Board
