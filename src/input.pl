@@ -1,10 +1,10 @@
-get_int(Input) :- skip_line, get_code(C), Input is C - 48.
+get_int(Input) :- get_code(C), C \= 10, Input is C - 48, skip_line.
+get_character(Input):- get_char(Input), Input \= '\n', skip_line.
 
 ask_row(Row):-
 	repeat,
 	write('=> Row: '),
-	skip_line,
-	get_char(Input),
+	get_character(Input),
 	validate_row(Input, Row), !.
 
 validate_row(Input, Row):- letter(Row, Input).

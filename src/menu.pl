@@ -3,8 +3,8 @@ menu:-
     print_menu,
     repeat,
     write('=> Insert Option '),
-    get_code(C), Input is C - 48,
-    handle_menu_option(Input), skip_line.
+    get_int(Input),
+    handle_menu_option(Input).
 
 % setup_menu(+SetupMenu , -Mode) - prints the menu with initial board setup options and returns de chosen setup mode
 setup_menu(SetupMenu, Mode) :-
