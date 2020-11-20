@@ -8,13 +8,13 @@ menu:-
     get_int(Input),
     handle_menu_option(Input).
 
-% setup_menu(+SetupMenu , -Mode) - prints the menu with initial board setup options and returns de chosen setup mode
-setup_menu(SetupMenu, Mode) :-
-    print_setup_menu(SetupMenu),
+% setup_menu(-Mode) - prints the menu with initial board setup options and returns de chosen setup mode
+setup_menu(Mode) :-
+    print_setup_menu,
     repeat,
     write('=> Insert Option '),
     get_int(Input),
-    handle_setup_option(Input, SetupMenu, Mode).
+    handle_setup_option(Input, Mode).
 
 % level_menu(-Level) - prints the level menu and asks for the level of the computer
 level_menu(Level) :-
@@ -38,7 +38,7 @@ handle_menu_option(0).
 
 % player vs player
 handle_menu_option(1):-
-    setup_menu(1, GameMode),
+    setup_menu(GameMode),
     write('\33\[2J'),
     game_loop(GameMode, 0, 0).
 
@@ -55,7 +55,7 @@ handle_menu_option(2):-
 % computer vs computer
 handle_menu_option(3):-
     level_menu2(P1Level, P2Level),
-    setup_menu(1, GameMode),
+    setup_menu(GameMode),
     write('\33\[2J'),
     game_loop(GameMode, P1Level, P2Level).
 
@@ -79,7 +79,7 @@ handle_first_player(1):-
     write('\33\[2J'),
     print_player('WHITE'),
     level_menu(Level),
-    setup_menu(2, GameMode),
+    setup_menu(GameMode),
     game_loop(GameMode, Level, 0).
 
 % user plays first
@@ -87,16 +87,16 @@ handle_first_player(2):-
     write('\33\[2J'),
     print_player('BLACK'),
     level_menu(Level),
-    setup_menu(1, GameMode),
+    setup_menu(GameMode),
     game_loop(GameMode, 0, Level).
     
 handle_first_player(_Option):- write('ERROR: Invalid Option!\n'), fail.
 
 
-handle_setup_option(1, _SetupMenu, DefaultMode):- initial(DefaultMode).
-handle_setup_option(2, _SetupMenu, RandomMode):- initial(random, RandomMode).
-handle_setup_option(3, 1, UserMode):- initial(user, UserMode).
-handle_setup_option(_, _, _):- write('ERROR: Invalid Option!\n'), fail.
+handle_setup_option(1, DefaultMode):- initial(DefaultMode).
+handle_setup_option(2, RandomMode):- initial(random, RandomMode).
+handle_setup_option(3, UserMode):- initial(user, UserMode).
+handle_setup_option(_, _):- write('ERROR: Invalid Option!\n'), fail.
 
 
 print_menu:-
@@ -129,7 +129,7 @@ print_menu:-
     write('|_____________________________________________________________|'),nl, nl.
 
 
-print_setup_menu(1):-
+print_setup_menu:-
     write(' _____________________________________________________________'),nl,
     write('|                                                             |'),nl,
     write('|                                                             |'),nl,
@@ -151,25 +151,6 @@ print_setup_menu(1):-
     write('|                                                             |'),nl,
     write('|_____________________________________________________________|'),nl, nl.
 
-print_setup_menu(2):-
-    write(' _____________________________________________________________'),nl,
-    write('|                                                             |'),nl,
-    write('|                                                             |'),nl,
-    write('|                                                             |'),nl,
-    write('|                                                             |'),nl,
-    write('|                                                             |'),nl,
-    write('|                    BOARD SETUP MODE                         |'),nl,
-    write('|                                                             |'),nl,
-    write('|                                                             |'),nl,
-    write('|                    (1) Default Board                        |'),nl,
-    write('|                                                             |'),nl,
-    write('|                    (2) Random Board                         |'),nl,
-    write('|                                                             |'),nl, 
-    write('|                                                             |'),nl,
-    write('|                                                             |'),nl,
-    write('|                                                             |'),nl,
-    write('|                                                             |'),nl,
-    write('|_____________________________________________________________|'),nl, nl.
         
 print_player_menu:-
     write(' _____________________________________________________________'),nl,
@@ -192,6 +173,7 @@ print_player_menu:-
     write('|                                                             |'),nl,
     write('|_____________________________________________________________|'),nl, nl.
 
+
 print_level_menu:-
     write(' _____________________________________________________________'),nl,
     write('|                                                             |'),nl,
@@ -212,6 +194,7 @@ print_level_menu:-
     write('|                                                             |'),nl,
     write('|                                                             |'),nl,
     write('|_____________________________________________________________|'),nl, nl.
+
 
 print_pc_level_menu:-
     write(' _____________________________________________________________'),nl,
@@ -237,6 +220,7 @@ print_pc_level_menu:-
     write('|                                                             |'),nl,
     write('|                                                             |'),nl,
     write('|_____________________________________________________________|'),nl, nl.
+
 
 print_player(Color):-
     write(' _____________________________________________________________'),nl,
