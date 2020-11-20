@@ -1,15 +1,5 @@
 % Game
 
-% TODO: player_piece and opponent_piece shall be in atoms?
-% player_piece(?Piece, ?Player) - Associates a Piece to its Player
-player_piece(black, 1).
-player_piece(white, -1).
-
-% opponent_piece(?Piece, ?Opponent) - Associates a Piece to the Opponent of the Player
-opponent_piece(white, 1).
-opponent_piece(black, -1).
-
-
 % game_loop(+GameState, +P1, +P2) - Starts the gameplay 
 game_loop(GameState, P1, P2):- game_loop(GameState, 1, 0, 0, P1, P2).
 

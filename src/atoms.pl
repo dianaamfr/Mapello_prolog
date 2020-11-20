@@ -8,6 +8,7 @@ code(bonus, '*', 3).
 code(white, 'O', 4).
 code(black, 'X', 5).
 
+
 % letter(?N, ?Letter)
 letter(0, 'a').
 letter(1, 'b').
@@ -20,6 +21,17 @@ letter(7, 'h').
 letter(8, 'i').
 letter(9, 'j').
 
+
 % player(+PlayerId, -Name)
 player(1, 'BLACK'). 
 player(-1, 'WHITE').
+
+
+% player_piece(?Piece, ?Player) - Associates a Piece to its Player
+player_piece(black, 1).
+player_piece(white, -1).
+
+
+% opponent_piece(?Piece, ?Opponent) - Associates a Piece to the Opponent of the Player
+opponent_piece(white, 1).
+opponent_piece(black, -1).

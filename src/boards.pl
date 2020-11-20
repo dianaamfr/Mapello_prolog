@@ -17,12 +17,10 @@ initial([
 % initial(+Key, -Board) - Creates the initial Game State identified by Key
 % Create random board
 initial(random, Board) :- 
-    maplist(restorePieces,[wall, joker, bonus]),
-    maplist(lineType1, [LA,LJ]),
-    maplist(lineType2, [LB,LI,LC,LH,LD,LG]),
-    lineType3(LE, [black, white]),
-    lineType3(LF, [white, black]),
-    append([LA, LB, LC, LD, LE, LF, LG, LH, LI, LJ],[], Board).
+    empty(Empty),
+    random_jokers(Empty, B1, 8), 
+    random_walls(B1, B2, 8), 
+    random_bonus(B2, Board, 8).
 
 % Let user set up the board
 initial(user, Board) :- 
@@ -32,6 +30,40 @@ initial(user, Board) :-
     place_walls(B1, B2),
     print_board(B2),
     place_bonus(B2, Board).
+
+% random_jokers(+Board, -NewBoard, +N) - Places N random jokers in Board, returning a NewBoard
+random_jokers(Board, Board, 0).
+
+random_jokers(Board, NewBoard, N) :-
+    N > 0,
+    findall(Row-Col,(between(0,9,Row), between(0,9,Col), get_matrix_value(Board, Row, Col, wall)), Walls),
+    random_member(Row-Col, Walls),
+    set_matrix_value(Board, Row, Col, joker, B1),
+    N1 is N - 1,
+    random_jokers(B1, NewBoard, N1).
+
+% random_walls(+Board, -NewBoard, +N) - Places N random walls in Board, returning a NewBoard
+random_walls(Board, Board, 0).
+
+random_walls(Board, NewBoard, N) :-
+    N > 0,
+    findall(Row-Col,(between(1,8,Row), between(1,8,Col), get_matrix_value(Board, Row, Col, empty)), Empties),
+    random_member(Row-Col, Empties),
+    set_matrix_value(Board, Row, Col, wall, B1),
+    N1 is N - 1,
+    random_walls(B1, NewBoard, N1).
+
+% random_bonus(+Board, -NewBoard, +N) - Places N random bonus in Board, returning a NewBoard
+random_bonus(Board, Board, 0).
+
+random_bonus(Board, NewBoard, N) :-
+    N > 0,
+    findall(Row-Col,(between(1,8,Row), between(1,8,Col), get_matrix_value(Board, Row, Col, empty)), Empties),
+    random_member(Row-Col, Empties),
+    set_matrix_value(Board, Row, Col, bonus, B1),
+    N1 is N - 1,
+    random_bonus(B1, NewBoard, N1).
+
 
 % place_joker(+Board, -NewBoard) - Places the Jokers in the Board and returns the NewBoard
 place_jokers(Board, NewBoard):-

@@ -1,6 +1,5 @@
 % Utils
 
-
 % get_list_value(+List, +Pos, -Value) - Get the Value of the element at index Pos of the List 
 get_list_value(L, Pos, Value) :- nth0(Pos,L,Value).
 
