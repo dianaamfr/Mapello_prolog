@@ -1,4 +1,5 @@
 % Atoms
+
 % code(+Id, ?Symbol, ?N)
 code(joker, 'J', 0).
 code(wall,  '#', 1).
@@ -7,7 +8,6 @@ code(bonus, '*', 3).
 code(white, 'O', 4).
 code(black, 'X', 5).
 
-% Board Rows Headers
 % letter(?N, ?Letter)
 letter(0, 'a').
 letter(1, 'b').

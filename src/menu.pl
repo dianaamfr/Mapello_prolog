@@ -1,3 +1,5 @@
+% Menu
+
 % menu - prints the main menu of the game and asks for the game mode
 menu:-
     print_menu,
@@ -31,7 +33,7 @@ level_menu2(P1Level, P2Level) :-
     handle_pc_level_option(Input, P1Level, P2Level).
 
 
-% handle_menu_option(+Option) - generates the game or a new menu according to the option chosen
+% handle_menu_option(+Option) - generates the game or a new menu accordingly to the option chosen
 handle_menu_option(0).
 
 % player vs player
@@ -64,6 +66,7 @@ handle_level_option(1, 1).
 handle_level_option(2, 2). 
 handle_level_option(_, _):- write('ERROR: Invalid Option!\n'), fail.
 
+
 handle_pc_level_option(1, 1, 1).
 handle_pc_level_option(2, 2, 2). 
 handle_pc_level_option(3, 1, 2).
@@ -91,9 +94,7 @@ handle_first_player(_Option):- write('ERROR: Invalid Option!\n'), fail.
 
 
 handle_setup_option(1, _SetupMenu, DefaultMode):- initial(DefaultMode).
-
 handle_setup_option(2, _SetupMenu, RandomMode):- initial(random, RandomMode).
-
 handle_setup_option(3, 1, UserMode):- initial(user, UserMode).
 handle_setup_option(_, _, _):- write('ERROR: Invalid Option!\n'), fail.
 

@@ -1,4 +1,6 @@
-%print_line(+Line)
+% Display
+
+% print_line(+Line)
 print_line([]).
 print_line([C|L]):-
     write(' '),
@@ -25,12 +27,12 @@ print_board(GameState):-
     write('===|===|===|===|===|===|===|===|===|===|===|\n'),
     print_matrix(GameState, 0).
 
-% display_points(+BlackPoints, +WhitePoints)
+% display_points(+BlackPoints, +WhitePoints) - Prints Black and White Players' points
 display_points(BlackPoints, WhitePoints):- 
-    write('=> Black\'s Points: '), write(BlackPoints),nl,
-    write('=> White\'s Points: '), write(WhitePoints),nl.
+    write('=> Black\'s Points: '), write(BlackPoints), nl,
+    write('=> White\'s Points: '), write(WhitePoints), nl.
 
-% display_game(+GameState, +Player) - Displays the current GameState of the board and the player who plays next
+% display_game(+GameState, +Player) - Displays the current GameState of the board and the Player who plays next
 display_game(GameState, Player):-
     print_board(GameState),nl,  
     write('=============== '),

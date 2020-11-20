@@ -53,13 +53,13 @@ place_bonus(Board, NewBoard):-
 ask_number(Number, Piece):-
     repeat,
     format('\n=> Number of ~s (0 to 8) ', [Piece]),
-    get_int(Input),
-    validate_number(Input, Number, Piece).
+    get_int(Number),
+    validate_number(Number).
 
 
-% validate_number(+Number, +Piece) - Checks if the number of pieces respects Mapello's rules - max 8 pieces 
-validate_number(Number, Number, _):- between(0, 8, Number).
-validate_number(_, _, _) :- write('ERROR: Invalid number!\n\n'), fail.
+% validate_number(+Number) - Checks if the number of pieces respects Mapello's rules - max 8 pieces 
+validate_number(Number):- between(0, 8, Number).
+validate_number(_) :- write('ERROR: Invalid number!\n\n'), fail.
 
 
 % place_loop(+Board, -NewBoard, N, Message, Piece) - Loop to place N pieces of type Piece on the Board and return the NewBoard
