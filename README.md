@@ -18,15 +18,18 @@ Para a correta execução do jogo, usando SICStus Prolog versão 4.6, é necess�
 
 ### Descrição
 
+#### Configuração do Tabuleiro
+
 No jogo Mapello, destinado a 2 jogadores, as peças utilizadas são discos reversíveis **pretos** e **brancos**, sendo a cor voltada para cima a que identifica uma peça do jogador.
-O tabuleiro, com uma configuração quadrangular de 10x10, é delimitado por **paredes**, correspondendo a área jogável ao centro do tabuleiro, 8x8. Na preparação do tabuleiro, podem ainda ser posicionadas outras peças, até um máximo de 8, de cada um dos seguintes tipos: 
-- **paredes**, a cinzento, extra e imóveis.
-- **bónus**, a azul, que premeiam, com 3 pontos, o jogador que jogue sobre eles.
-- **jokers**, a vermelho, que funcionam como peças do jogador atual, sendo que só podem ser posicionados fora da área jogável.
+O tabuleiro, com uma configuração quadrangular de 10x10, é delimitado por **paredes**, correspondendo a área jogável ao centro do tabuleiro, 8x8. 
+Nas quatro células centrais devem ser colocadas 2 peças de cada jogador, num padrão diagonal. Na preparação do tabuleiro, podem ainda ser posicionadas outras peças, até um máximo de 8, de cada um dos seguintes tipos: 
+- **paredes**, a cinzento, extra e imóveis, em qualquer posição da área jogável.
+- **bónus**, a azul, que premeiam, com 3 pontos, o jogador que jogue sobre eles, em qualquer posição da área jogável.
+- **jokers**, a vermelho, funcionando como peças do jogador atual, que só podem ser posicionados nos limites, fora da área jogável.
 
-O jogador que não escolher o tabuleiro escolhe quem joga primeiro. Nas quatro células centrais devem ser colocadas 2 peças de cada jogador, no seguinte padrão diagonal:
+O jogador que não escolher o tabuleiro escolhe quem joga primeiro.
 
-<img src="images/init.png" alt="Tabuleiro - Possível configuração inicial" width="300"/>
+![Tabuleiro - Possível configuração inicial](images/init.png)
 
 *Exemplo de uma possível configuração do tabuleiro* 
 
