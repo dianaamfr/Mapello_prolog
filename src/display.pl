@@ -2,9 +2,9 @@
 
 % print_line(+Line)
 print_line([]).
-print_line([C|L]):-
+print_line([ID|L]):-
     write(' '),
-    code(C,P,_), write(P),
+    atom(ID, Symbol), write(Symbol),
     write(' |'),
     print_line(L).
 
@@ -36,6 +36,6 @@ display_points(BlackPoints, WhitePoints):-
 display_game(GameState, Player):-
     print_board(GameState),nl,  
     write('=============== '),
-    player(Player, PlayerString),
+    player(Player, PlayerString, _, _),
     format('~s\'s turn', [PlayerString]),
     write(' ==============='), nl.

@@ -1,12 +1,17 @@
 % Atoms
 
-% code(+Id, ?Symbol, ?N)
-code(joker, 'J', 0).
-code(wall,  '#', 1).
-code(empty, ' ', 2).
-code(bonus, '*', 3).
-code(white, 'O', 4).
-code(black, 'X', 5).
+% atom(?Piece, ?Symbol)
+atom(joker, 'J').
+atom(wall,  '#').
+atom(empty, ' ').
+atom(bonus, '*').
+atom(white, 'O').
+atom(black, 'X').
+
+
+% player(+PlayerId, -Name, -Piece, -OpponentPiece)
+player(1, 'BLACK', black, white). 
+player(-1, 'WHITE', white, black).
 
 
 % letter(?N, ?Letter)
@@ -20,18 +25,3 @@ letter(6, 'g').
 letter(7, 'h').
 letter(8, 'i').
 letter(9, 'j').
-
-
-% player(+PlayerId, -Name)
-player(1, 'BLACK'). 
-player(-1, 'WHITE').
-
-
-% player_piece(?Piece, ?Player) - Associates a Piece to its Player
-player_piece(black, 1).
-player_piece(white, -1).
-
-
-% opponent_piece(?Piece, ?Opponent) - Associates a Piece to the Opponent of the Player
-opponent_piece(white, 1).
-opponent_piece(black, -1).

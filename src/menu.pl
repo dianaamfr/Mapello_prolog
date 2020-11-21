@@ -28,7 +28,7 @@ level_menu(Level) :-
 level_menu2(P1Level, P2Level) :-
     print_pc_level_menu,
     repeat,
-    write('=> Insert Option (1-4)'),
+    write('=> Insert Option (1-4) '),
     get_int(Input),
     handle_pc_level_option(Input, P1Level, P2Level).
 
@@ -48,7 +48,7 @@ handle_menu_option(2):-
     % ask who plays first
     print_player_menu,
     repeat,
-    write('=> Insert Option (1-2)'),
+    write('=> Insert Option (1-2) '),
     get_int(Input),
     handle_first_player(Input).
 

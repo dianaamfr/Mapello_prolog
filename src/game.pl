@@ -30,6 +30,13 @@ game_loop(GameState, _Player, BlackPoints, WhitePoints, _P1, _P2):-
 game_over(GameState, Player, _):-
 	value(GameState, Player, 0).
 
+
+% value(+GameState, +Player, -Value) - evaluate GameState: get number of valid moves for the current Player
+value(GameState, Player, Value):-
+	valid_moves(GameState, Player, ListOfMoves),
+	length(ListOfMoves, Value).
+
+
 % game_over(+GameState-BlackPoints-WhitePoints, -Winner) - Calculates the Points and Announces the Winner
 game_over(GameState-BlackPoints-WhitePoints, Winner):-
 	get_total_points(GameState-BlackPoints-WhitePoints, TotalBp, TotalWp),
@@ -75,14 +82,14 @@ ask_move(_GameState, _Player , _P1, _P2, Row, Col):-
 
 
 % choose_move(+GameState, +Player, +Level, -Move) - Gets the Move from the computer depending on the level
+% Level 1 - get a random valid move
 choose_move(GameState, Player, 1, [Row,Col]):-
 	valid_moves(GameState, Player, ListOfMoves),
-	% get a random valid move
 	random_member(_-Row-Col, ListOfMoves).
 
+% Level 2 - get the move that turns more pieces
 choose_move(GameState, Player, 2, [Row,Col]):-
 	valid_moves(GameState, Player, ListOfMoves),
-	% get the move that turns more pieces if the level is 2
 	last(ListOfMoves, _-Row-Col).
 
 
@@ -92,8 +99,8 @@ move(GameState, [Player, Row, Col, BlackPoints, WhitePoints, NewBP, NewWP], NewG
 	within_limits(Row, Col),
 	% validate the move
 	valid_move(GameState, Player, Row, Col, _-WouldTurn), !,
-	% get the piece to be moved
-	player_piece(Piece, Player),
+	% get the player piece
+	player(Player, _, Piece, _),
 	% place the piece
 	set_matrix_value(GameState, Row, Col, Piece, NGS1),
 	% turn opponent's pieces
@@ -110,11 +117,6 @@ within_limits(Row, Col):-
 	Row > 0, Row < 9,
 	Col > 0, Col < 9.
 
-% value(+GameState, +Player, -Value) - evaluate GameState: get number of valid moves for the current Player
-value(GameState, Player, Value):-
-	valid_moves(GameState, Player, ListOfMoves),
-	length(ListOfMoves, Value).
-
 
 % valid_moves(+GameState, +Player, -ListOfMoves) - Get the ordered list of possible moves
 valid_moves(GameState, Player, ListOfMoves):-
@@ -127,8 +129,8 @@ valid_moves(_, _, []).
 % get_moves(+GameState, +Player, -Val-Row-Col) - Auxiliar predicate for the valid_moves setof
 get_move(GameState, Player, Val-Row-Col):-
 	between(1,8,Row), between(1,8,Col),
-	get_bonus_at(GameState,Row,Col,Bonus),
 	valid_move(GameState, Player, Row, Col, S-_), 
+	get_bonus_at(GameState,Row,Col,Bonus),
 	Val is S + Bonus.
 
 
@@ -142,11 +144,9 @@ A Move is valid if (all of these happen):
 valid_move(GameState, Player, Row, Col, WouldTurn):-
 	% cell is empty or with bonus
 	(empty_cell(GameState, Row, Col); bonus_cell(GameState, Row, Col)),
-	% gets the player's piece
-	player_piece(PlayerPiece, Player),
-	% gets the opponent's piece
-	opponent_piece(OpponentPiece, Player),
-	% get moves that would make at least one opponent piece to turn
+	% gets the player's piece and the opponent's piece
+	player(Player, _, PlayerPiece, OpponentPiece),
+	% get all the opponent cells that would be turned
 	would_turn(GameState, Row, Col, PlayerPiece, OpponentPiece, WouldTurnList),
 	% check for at least one
 	length(WouldTurnList, N),  N > 0,
