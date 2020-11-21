@@ -2,16 +2,31 @@
 
 % get_int(-Input) - Gets an Integer as an User Input
 get_int(Input) :- 
-	get_code(C), 
+	peek_code(C), 
 	C \= 10, 
+	get_code(C),
+	peek_char(Char),
+	Char == '\n',
 	Input is C - 48, 
-	skip_line.
+	!, skip_line.
+
+get_int(_):- peek_code(C), C \= 10, !, write('ERROR: Invalid Input!\n\n'), skip_line, fail.
+
+get_int(_):- write('ERROR: Invalid Input!\n\n'),  get_code(_), fail.
 
 % get_character(-Input) - Gets a Char as an User Input
 get_character(Input):- 
+	peek_char(Input), 
+	Input \= '\n',
 	get_char(Input), 
-	Input \= '\n', 
-	skip_line.
+	peek_char(Char),
+	Char == '\n', 
+	!, skip_line.
+
+get_character(_):- peek_char(C), C \= '\n', !, write('ERROR: Invalid Input!\n\n'), skip_line, fail.
+
+get_character(_):- write('ERROR: Invalid Input!\n\n'),  get_char(_), fail.
+
 
 % ask_row(-Row) - Asks the User for a valid Row
 ask_row(Row):-
