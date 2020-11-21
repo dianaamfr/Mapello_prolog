@@ -20,10 +20,10 @@ game_loop(GameState, Player, BlackPoints, WhitePoints, P1, P2):-
 	game_loop(GameState, NewPlayer, BlackPoints, WhitePoints, P1, P2).
 
 game_loop(GameState, _Player, BlackPoints, WhitePoints, _P1, _P2):-
-	print_board(GameState),
+	nl, print_board(GameState), nl,
+	write('Game Over!\n'), nl,
 	game_over(GameState-BlackPoints-WhitePoints, Winner),
-	write('Game Over!\n'),
-	write(Winner).
+	write(Winner), nl.
 
 
 % game_over(+GameState, +Player, +Dummy) - Checks if the Current Player cannot play 

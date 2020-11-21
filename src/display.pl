@@ -14,17 +14,17 @@ print_matrix([L|T], N):-
     N < 10,
     write(' '),
     letter(N, Letter), write(Letter),
-    write(' |'),
+    write(' ||'),
     N1 is N + 1,
     print_line(L), nl,
-    write('---|---|---|---|---|---|---|---|---|---|---|\n'),
+    write('---||---|---|---|---|---|---|---|---|---|---|\n'),
     print_matrix(T, N1).
 
 % print_board(+GameState) - Prints the current GameState of the board
 print_board(GameState):-
-    write('   |   |   |   |   |   |   |   |   |   |   |\n'),
-    write('   | 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 |\n'),
-    write('===|===|===|===|===|===|===|===|===|===|===|\n'),
+    write('   ||   |   |   |   |   |   |   |   |   |   |\n'),
+    write('   || 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 |\n'),
+    write('===||===|===|===|===|===|===|===|===|===|===|\n'),
     print_matrix(GameState, 0).
 
 % display_points(+BlackPoints, +WhitePoints) - Prints Black and White Players' points
@@ -34,7 +34,7 @@ display_points(BlackPoints, WhitePoints):-
 
 % display_game(+GameState, +Player) - Displays the current GameState of the board and the Player who plays next
 display_game(GameState, Player):-
-    print_board(GameState),nl,  
+    nl,print_board(GameState),nl,  
     write('=============== '),
     player(Player, PlayerString, _, _),
     format('~s\'s turn', [PlayerString]),
