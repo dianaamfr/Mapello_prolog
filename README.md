@@ -22,7 +22,7 @@ Para a correta execução do jogo, usando SICStus Prolog versão 4.6, é necess�
 
 No jogo Mapello, destinado a 2 jogadores, as peças utilizadas são discos reversíveis **pretos** e **brancos**, sendo a cor voltada para cima a que identifica uma peça do jogador.
 O tabuleiro, com uma configuração quadrangular de 10x10, é delimitado por **paredes**, correspondendo a área jogável ao centro do tabuleiro, 8x8. 
-Nas quatro células centrais devem ser colocadas 2 peças de cada jogador, num padrão diagonal. Na preparação do tabuleiro, podem ainda ser posicionadas outras peças, até um máximo de 8, de cada um dos seguintes tipos: 
+Nas quatro células centrais devem ser colocadas 2 peças de cada jogador, num padrão diagonal (*Imagem 1*). Na preparação do tabuleiro, podem ainda ser posicionadas outras peças, até um máximo de 8, de cada um dos seguintes tipos: 
 - **paredes**, a cinzento, extra e imóveis, em qualquer posição da área jogável.
 - **bónus**, a azul, que premeiam, com 3 pontos, o jogador que jogue sobre eles, em qualquer posição da área jogável.
 - **jokers**, a vermelho, funcionando como peças do jogador atual, que só podem ser posicionados nos limites, fora da área jogável.
@@ -31,7 +31,7 @@ O jogador que não escolher o tabuleiro escolhe quem joga primeiro.
 
 ![Tabuleiro - Possível configuração inicial](images/init.png)
 
-*Exemplo de uma possível configuração do tabuleiro* 
+*1) Exemplo de uma possível configuração do tabuleiro* 
 
 #### Regras do jogo
 
@@ -77,11 +77,15 @@ player(1, 'BLACK', black, white).
 player(-1, 'WHITE', white, black).
 ```
 
-#### 2. Tabuleiro
+#### 2. Jogador
+
+O jogador de cor preta é representado internamente por 1 e o de cor branca por -1, sendo assim a mudança de jogador obtida pela negação do seu adversário.
+
+#### 3. Tabuleiro
 
 O tabuleiro de jogo é representado por uma lista de listas, em que cada célula contém uma das peças anteriores.
 
-##### 2.1. Estado de jogo Inicial
+##### 3.1. Estado de jogo Inicial
 
 ```prolog
 % initial(-Board)
@@ -99,7 +103,7 @@ initial([
 ]).
 ```
 
-##### 2.2. Estado de jogo Intermédio
+##### 3.2. Estado de jogo Intermédio
 
 ```prolog
 intermediate([
@@ -116,19 +120,19 @@ intermediate([
 ]).
 ```
 
-##### 2.3. Estado de jogo Final
+##### 3.3. Estado de jogo Final
 
 ```prolog
 final([
 [wall,  wall,  wall,  wall,  joker, wall,  wall,  wall,  wall, wall],
-[wall,  wall,  white, white, white, black, white, white, wall, wall],
-[wall,  white, black, white, black, black, wall,  white, black, wall],
-[joker, black, wall,  black, white, white, white, black, black, joker],
-[joker, black, white, black, white, white, black, white, black, wall],
-[wall,  black, white, black, white, black, black, white, black, wall],
-[wall,  black, white, white, black, black, white, wall,  white, joker],
-[joker, white, black, wall,  black, black, black, white, black, wall],
-[wall,  wall,  black, black, white, white, white, white, wall,  wall],
+[wall,  wall,  black, black, black, black, black, white, wall, wall],
+[wall,  black, black, black, black, black, wall,  black, white, wall],
+[joker, white, wall,  black, white, white, black, black, black, joker],
+[joker, white, white, black, black, black, white, black, black, wall],
+[wall,  white, black, black, black, white, white, white, black, wall],
+[wall,  white, white, black, white, black, white, wall,  black, joker],
+[joker, white, white, wall,  black, black, black, black, black, wall],
+[wall,  wall,  white, white, white, white, white, black, wall,  wall],
 [wall,  wall,  wall,  joker, wall,  wall,  wall,  joker, wall,  wall]
 ]).
 ```

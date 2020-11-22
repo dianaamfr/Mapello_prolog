@@ -165,13 +165,13 @@ intermediate([
 % final(-Board) - Returns a final Board
 final([
 [wall,  wall,  wall,  wall,  joker, wall,  wall,  wall,  wall, wall],
-[wall,  wall,  white, white, white, black, white, white, wall, wall],
-[wall,  white, black, white, black, black, wall,  white, black, wall],
-[joker, black, wall,  black, white, white, white, black, black, joker],
-[joker, black, white, black, white, white, black, white, black, wall],
-[wall,  black, white, black, white, black, black, white, black, wall],
-[wall,  black, white, white, black, black, white, wall,  white, joker],
-[joker, white, black, wall,  black, black, black, white, black, wall],
-[wall,  wall,  black, black, white, white, white, white, wall,  wall],
+[wall,  wall,  black, black, black, black, black, white, wall, wall],
+[wall,  black, black, black, black, black, wall,  black, white, wall],
+[joker, white, wall,  black, white, white, black, black, black, joker],
+[joker, white, white, black, black, black, white, black, black, wall],
+[wall,  white, black, black, black, white, white, white, black, wall],
+[wall,  white, white, black, white, black, white, wall,  black, joker],
+[joker, white, white, wall,  black, black, black, black, black, wall],
+[wall,  wall,  white, white, white, white, white, black, wall,  wall],
 [wall,  wall,  wall,  joker, wall,  wall,  wall,  joker, wall,  wall]
 ]).
