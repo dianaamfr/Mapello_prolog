@@ -77,9 +77,10 @@ player(1, 'BLACK', black, white).
 player(-1, 'WHITE', white, black).
 ```
 
-#### 2. Jogador
+#### 2. Jogador e Bónus
 
 O jogador de cor preta é representado internamente por 1 e o de cor branca por -1, sendo assim a mudança de jogador obtida pela negação do seu adversário.
+Os bónus adquiridos pelos jogadores são atualizados a cada jogada e passados na chamada recursiva seguinte do loop de jogo.
 
 #### 3. Tabuleiro
 
@@ -155,6 +156,14 @@ display_game(GameState, Player):-
     write(' ==============='), nl.
 ```
 
+Para mostrar os pontos adquiridos através da captura de bónus utiliza-se o predicado `display_points(+BlackPoints, +WhitePoints)`.
+```prolog
+% display_points(+BlackPoints, +WhitePoints) - Prints Black and White Players' points
+display_points(BlackPoints, WhitePoints):- 
+    write('=> Black\'s Points: '), write(BlackPoints), nl,
+    write('=> White\'s Points: '), write(WhitePoints), nl.
+```
+
 Para imprimir o tabuleiro, é utilizado o predicado `print_board(+GameState)` que, internamente, recorre a predicados auxiliares, `print_matrix(+Matrix, +N)` e `print_line(+Line)`, para imprimir o estado de jogo e os cabeçalhos das coordenadas.
 
 ```prolog
@@ -210,9 +219,86 @@ print_line([ID|L]):-
 
 #### Menus e Input
 
+O sistema de menus utilizado para definir o modo de jogo, os níveis dos computadores e o modo de geração do tabuleiro recorre, essencialmente, aos predicados do ficheiro `menu.pl`.
+
+
+O menu inicial permite ao utilizador escolher o modo de jogo: **Jogador vs Jogado**, **Jogador vs Computador** ou **Computador vs Computador**. 
+
+![Menu Inicial](images/menu_inicial.png)
+
+
+Escolhendo o modo **Jogador vs Computador**, o utilizador escolhe ainda quem joga primeiro(**Computador vs Jogador** ou **Jogador vs Computador**) e o nível de inteligência artificial do computador - ganancioso ou aleatório. 
+|  |   |
+|--|---|
+|![Ordem de Jogada](images/computador_jogador.png)|![Nível do computador](images/menu_1bot.png)|
 
 
 
+Já no modo **Computador vs Computador**, é possível escolher o nível de inteligência artificial de cada computador.
+
+![Níveis dos computadores](images/menu_bot.png)
+
+
+Finalmente, em qualquer um dos modos, o utilizador pode escolher se o tabuleiro é o padrão, se é gerado de forma aleatória ou se quer criar um tabuleiro personalizado, utilizando-se, neste último caso, alguns predicados do ficheiro `boards.pl` para pedir o número de peças e a sua posição ao utilizador.
+
+![Menu de Setup](images/menu_setup.png)
+
+Para pedir e validar o input recorremos aos predicados do ficheiro `input.pl`.
+
+Para ler um inteiro é utilizado o predicado `get_int(-Input)` e para ler um caráter o predicado `get_character(-Input)`, descrevendo-se apenas o primeiro por serem muito semelhantes. Ambos os predicados tornam mais intuitiva a interação com o utilizador, validando o seu input e exigindo apenas a escrita da opção desejada seguida de 'ENTER'. 
+
+```prolog
+	get_int(Input) :- 
+		% lê o próximo código sem o remover e verifica se não se trata de um Enter - caso em que o input está vazio
+		peek_code(C),  C \= 10, 
+		% lê o código removendo do buffer
+		get_code(C),
+		% verifica se o input é um único caráter, verificando se o próximo caráter é um 'newline'
+		peek_char(Char), Char == '\n',
+		% transforma o código lido no inteiro correspondente 
+		Input is C - 48, 
+		% limpa o resto do buffer
+		!, skip_line.
+
+	% imprime mensagem de erro se o input não é um inteiro nem um Enter, limpa o buffer e falha
+	get_int(_):- peek_code(C), C \= 10, !, write('ERROR: Invalid Input!\n\n'), skip_line, fail.
+
+	% imprime mensagem de erro no caso, limpa o buffer e falha no caso de o input ser um Enter
+	get_int(_):- write('ERROR: Invalid Input!\n\n'),  get_code(_), fail.
+```
+
+Os predicados que pedem input ao utilizador recorrem todos a uma estratégia semelhante: utilizando o predicado `repeat\0`, os dois predicados anteriores e um predicado para validar se o input se enquadra no que está a ser pedido, pedem repetidamente input ao utilizador até este ser válido. Como exemplo são descritos abaixo os predicados que pedem uma linha e uma coluna ao utilizador.
+
+```prolog
+% ask_row(-Row) - Asks the User for a valid Row
+ask_row(Row):-
+	repeat,
+	write('=> Row: '),
+	get_character(Input),
+	validate_row(Input, Row), !.
+
+% validate_row(+Input, -Row) - Validates the User Row Input
+validate_row(Input, Row):- 
+	letter(Row, Input).
+
+validate_row(_, _) :- 
+	write('ERROR: Invalid row!\n\n'), fail.
+```
+```prolog
+% ask_col(-Col) - Asks the User for a valid Column
+ask_col(Col):-
+	repeat,
+	write('=> Column: '),
+	get_int(Input),
+	validate_col(Input, Col), !.
+
+% validate_col(+Input, -Input) - Validates the User Column Input
+validate_col(Input, Input):- 
+	between(0, 9, Input).
+	
+validate_col(_, _) :- 
+	write('ERROR: Invalid Column!\n\n'), fail.
+```
 ----
 
 ### Lista de Jogadas Válidas
