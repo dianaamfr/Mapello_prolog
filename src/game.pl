@@ -5,7 +5,7 @@ game_loop(GameState, P1, P2):- game_loop(GameState, 1, 0, 0, P1, P2).
 
 % game_loop(+GameState, +Player, +BlackPoints, +WhitePoints, +P1, +P2) - Starts the gameplay 
 game_loop(GameState, Player, BlackPoints, WhitePoints, P1, P2):-
-	\+cant_play(GameState, Player, _),
+	\+cant_play(GameState, Player),
 	display_game(GameState, Player),
 	display_points(BlackPoints, WhitePoints),
 	repeat,
@@ -16,7 +16,7 @@ game_loop(GameState, Player, BlackPoints, WhitePoints, P1, P2):-
 
 game_loop(GameState, Player, BlackPoints, WhitePoints, P1, P2):-
 	NewPlayer is -Player,
-	\+cant_play(GameState, NewPlayer, _),
+	\+cant_play(GameState, NewPlayer),
 	player(Player, PlayerString, _, _),
 	format('\nNo valid moves for ~s player! Passing the turn...\n', [PlayerString]),
 	game_loop(GameState, NewPlayer, BlackPoints, WhitePoints, P1, P2).
@@ -28,8 +28,8 @@ game_loop(GameState, _Player, BlackPoints, WhitePoints, _P1, _P2):-
 	write(Winner), nl.
 
 
-% cant_play (+GameState, +Player, +Dummy) - Checks if the Current Player cannot play 
-cant_play(GameState, Player, _):-
+% cant_play (+GameState, +Player) - Checks if the Current Player cannot play 
+cant_play(GameState, Player):-
 	value(GameState, Player, 0).
 
 

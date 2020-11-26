@@ -365,8 +365,24 @@ move(_, _, _):- write('\n ERROR: Invalid move!\n'), fail.
 
 ### Final do Jogo
 
+Para o jogo terminar é necessário que nenhum dos jogadores tenha jogadas válidas. Assim, antes de cada turno do jogo, é utilizado o predicado `cant_play(+GameState, +Player)`, que recorre, por sua vez, ao predicado `value(+GameState, +Player, -Value)`, para verificar se o jogador atual não tem jogadas válidas, isto é, se Value é nulo. Se não tiver, é dada a vez ao adversário e é verificado se este tem jogadas válidas. 
 
+```prolog
+% cant_play (+GameState, +Player) - Checks if the Current Player cannot play 
+cant_play(GameState, Player):-
+	value(GameState, Player, 0).
+```
 
+Se o jogador adversário também não conseguir realizar qualquer jogada válida, estamos perante o fim do jogo, utilizando-se o predicado `game_over(+GameState, -Winner)` para calcular e mostrar no ecrã os pontos finais dos jogadores e, deste modo, identificar o vencedor.
+
+```prolog
+% game_over(+GameState-BlackPoints-WhitePoints, -Winner) - Calculates the Points and Announces the Winner
+game_over(GameState-BlackPoints-WhitePoints, Winner):-
+	get_total_points(GameState-BlackPoints-WhitePoints, TotalBp, TotalWp),
+	write('Final Points: '), nl,
+	display_points(TotalBp, TotalWp),nl,
+	get_winner(TotalBp, TotalWp, Winner).
+```
 
 ### Avaliação do Tabuleiro
 
