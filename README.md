@@ -419,3 +419,6 @@ choose_move(GameState, Player, 2, [Row,Col]):-
 ```
 
 ### Conclusões
+
+Como constatado, este trabalho foi desenvolvido seguindo todas as diretrizes enunciadas e aplicando todo o conhecimento acumulado, na linguagem Prolog. Os predicados enumerados na ficha do projeto foram todos implementados, bem como as várias especificidades requeridas. Como explicado, tentamos, a todo o custo, garantir uma boa experiência de utilização para o jogador, em termos da visualização e dos inputs, e os níveis de IA implementados garantem a diversidade suficiente de modos de jogo que podem ser explorados. A introdução inválida de dados é verificada em todas as situações e as regras do jogo original são seguidas em todos os pormenores.
+Posto isto, damos como terminado este projeto.
