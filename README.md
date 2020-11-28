@@ -224,24 +224,24 @@ O sistema de menus utilizado para definir o modo de jogo, os níveis dos computa
 
 O menu inicial permite ao utilizador escolher o modo de jogo: **Jogador vs Jogado**, **Jogador vs Computador** ou **Computador vs Computador**. 
 
-![Menu Inicial](images/menu_inicial.png)
+![Menu Inicial](images/menu_inicial.PNG)
 
 
-Escolhendo o modo **Jogador vs Computador**, o utilizador escolhe ainda quem joga primeiro(**Computador vs Jogador** ou **Jogador vs Computador**) e o nível de inteligência artificial do computador - ganancioso ou aleatório. 
-|  |   |
+Escolhendo o modo **Jogador vs Computador**, o utilizador escolhe ainda quem joga primeiro (**Computador vs Jogador** ou **Jogador vs Computador**) e o nível de inteligência artificial do computador - ganancioso ou aleatório. 
+
+|![Ordem de Jogada](images/computador_jogador.PNG)|![Nível do computador](images/menu_1bot.PNG)|
 |--|---|
-|![Ordem de Jogada](images/computador_jogador.png)|![Nível do computador](images/menu_1bot.png)|
 
 
 
 Já no modo **Computador vs Computador**, é possível escolher o nível de inteligência artificial de cada computador.
 
-![Níveis dos computadores](images/menu_bot.png)
+![Níveis dos computadores](images/menu_bot.PNG)
 
 
-Finalmente, em qualquer um dos modos, o utilizador pode escolher se o tabuleiro é o padrão, se é gerado de forma aleatória ou se quer criar um tabuleiro personalizado, utilizando-se, neste último caso, alguns predicados do ficheiro `boards.pl` para pedir o número de peças e a sua posição ao utilizador.
+Finalmente, em qualquer um dos modos, o utilizador pode escolher se o tabuleiro é o padrão, se é gerado de forma aleatória ou se quer criar um tabuleiro personalizado, utilizando, neste último caso, alguns predicados do ficheiro `boards.pl` para pedir o número de peças e a sua posição ao utilizador.
 
-![Menu de Setup](images/menu_setup.png)
+![Menu de Setup](images/menu_setup.PNG)
 
 Para pedir e validar o input recorremos aos predicados do ficheiro `input.pl`.
 
@@ -254,20 +254,26 @@ Para ler um inteiro é utilizado o predicado `get_int(-Input)` e para ler um car
 		% lê o código removendo do buffer
 		get_code(C),
 		% verifica se o input é um único caráter, verificando se o próximo caráter é um 'newline'
-		peek_char(Char), Char == '\n',
+		peek_char('\n'),
 		% transforma o código lido no inteiro correspondente 
 		Input is C - 48, 
 		% limpa o resto do buffer
 		!, skip_line.
 
 	% imprime mensagem de erro se o input não é um inteiro nem um Enter, limpa o buffer e falha
-	get_int(_):- peek_code(C), C \= 10, !, write('ERROR: Invalid Input!\n\n'), skip_line, fail.
+	get_int(_):- 
+		peek_code(C), 
+		C \= 10, !, 
+		write('ERROR: Invalid Input!\n\n'), 
+		skip_line, fail.
 
 	% imprime mensagem de erro no caso, limpa o buffer e falha no caso de o input ser um Enter
-	get_int(_):- write('ERROR: Invalid Input!\n\n'),  get_code(_), fail.
+	get_int(_):- 
+		write('ERROR: Invalid Input!\n\n'),  
+		get_code(_), fail.
 ```
 
-Os predicados que pedem input ao utilizador recorrem todos a uma estratégia semelhante: utilizando o predicado `repeat\0`, os dois predicados anteriores e um predicado para validar se o input se enquadra no que está a ser pedido, pedem repetidamente input ao utilizador até este ser válido. Como exemplo são descritos abaixo os predicados que pedem uma linha e uma coluna ao utilizador.
+Os predicados que pedem input ao utilizador recorrem todos a uma estratégia semelhante: utilizando o predicado `repeat\0`, os dois predicados anteriores e um predicado para validar se o input se enquadra no que está a ser pedido, pedem, repetidamente, o Input ao utilizador até este ser válido. Como exemplo, são descritos abaixo os predicados que pedem uma linha e uma coluna ao utilizador.
 
 ```prolog
 % ask_row(-Row) - Asks the User for a valid Row
