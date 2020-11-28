@@ -82,13 +82,11 @@ check_bottom_right(Matrix, Row, Col, Pieces):-
 
 % empty_cell(+Matrix, +Row, +Col) - Check if a cell [Row, Col] is empty
 empty_cell(Matrix, Row, Col) :-
-	get_matrix_value(Matrix, Row, Col, Value),
-	Value == empty.
+	get_matrix_value(Matrix, Row, Col, empty).
 
 % bonus_cell(+Matrix, +Row, +Col) - Check if a cell [Row, Col] has a bonus
 bonus_cell(Matrix, Row, Col):-
-	get_matrix_value(Matrix, Row, Col, Value),
-	Value == bonus.
+	get_matrix_value(Matrix, Row, Col, bonus).
 
 % get_bonus_at(+Matrix, +Row, +Col, -Bonus) - Get the bonus in the cell [Row, Col]
 get_bonus_at(Matrix, Row, Col, 3):-

@@ -114,20 +114,14 @@ place_loop(Board, NewBoard, N, Message, Piece) :-
 
 
 % place_piece(+Board, +Piece, +ActualPiece, +Row, +Col, -NewBoard) - Place piece on Board[Row,Col] if the position is valid for Piece
-place_piece(Board, Piece, ActualPiece, Row, Col, NewBoard):-
-    Piece == joker,
-    ActualPiece == wall,
-    set_matrix_value(Board, Row, Col, Piece, NewBoard).
+place_piece(Board, joker, wall, Row, Col, NewBoard):-
+    set_matrix_value(Board, Row, Col, joker, NewBoard).
 
-place_piece(Board, Piece, ActualPiece, Row, Col, NewBoard):-
-    Piece == bonus,
-    ActualPiece == empty,
-    set_matrix_value(Board, Row, Col, Piece, NewBoard).
+place_piece(Board, bonus, empty, Row, Col, NewBoard):-
+    set_matrix_value(Board, Row, Col, bonus, NewBoard).
 
-place_piece(Board, Piece, ActualPiece, Row, Col, NewBoard):-
-    Piece == wall,
-    ActualPiece == empty,
-    set_matrix_value(Board, Row, Col, Piece, NewBoard).
+place_piece(Board, wall, empty, Row, Col, NewBoard):-
+    set_matrix_value(Board, Row, Col, wall, NewBoard).
 
 place_piece(_, _, _, _, _, _):- write('ERROR: Invalid position!\n'), fail.
 

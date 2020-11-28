@@ -160,15 +160,13 @@ update_points(GameState, Row, Col, Player, BlackPoints, WhitePoints, NewBP, NewW
 	bonus_cell(GameState, Row, Col),
 	update_points(Player, BlackPoints, WhitePoints, NewBP, NewWP).
 
-update_points(_, _, _, _, BlackPoints, WhitePoints, NewBP, NewWP) :- 
-	NewWP is WhitePoints, NewBP is BlackPoints.
+update_points(_, _, _, _, BlackPoints, WhitePoints, BlackPoints, WhitePoints).
 
-update_points(Player, BlackPoints, WhitePoints, NewBP, NewWP) :-
-	Player = 1,
-	NewBP is BlackPoints + 3, NewWP is WhitePoints.
+update_points(1, BlackPoints, WhitePoints, NewBP, WhitePoints) :-
+	NewBP is BlackPoints + 3.
 
-update_points(_, BlackPoints, WhitePoints, NewBP, NewWP) :-
-	NewWP is WhitePoints + 3, NewBP is BlackPoints.
+update_points(_, BlackPoints, WhitePoints, BlackPoints, NewWP) :-
+	NewWP is WhitePoints + 3.
 
 
 /* would_turn(+GameState, +Row, +Col, +PlayerPiece, +OpponentPiece, -WouldTurn) - 
