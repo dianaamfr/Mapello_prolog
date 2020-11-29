@@ -157,7 +157,7 @@ valid_move(GameState, Player, Row, Col, WouldTurn):-
 
 % update_points(+GameState, +Row, +Col, +Player, +BlackPoints, +WhitePoints, -NewBP, -NewWP) - Updates both players' points
 update_points(GameState, Row, Col, Player, BlackPoints, WhitePoints, NewBP, NewWP) :-
-	bonus_cell(GameState, Row, Col),
+	bonus_cell(GameState, Row, Col), !,
 	update_points(Player, BlackPoints, WhitePoints, NewBP, NewWP).
 
 update_points(_, _, _, _, BlackPoints, WhitePoints, BlackPoints, WhitePoints).
