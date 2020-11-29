@@ -1,7 +1,7 @@
 % Game
 
 /* game_loop(+GameState, +P1, +P2) - Starts the gameplay. 
-P1 and P2 represent the type of player (0 = human; 1 = pc random AI; 2 = pc greed AI)*/
+P1 and P2 represent the type of player (0 = human; 1 = pc random AI; 2 = pc greedy AI)*/
 game_loop(GameState, P1, P2):- game_loop(GameState, 1, 0, 0, P1, P2).
 
 % game_loop(+GameState, +Player, +BlackPoints, +WhitePoints, +P1, +P2) - Starts the gameplay
