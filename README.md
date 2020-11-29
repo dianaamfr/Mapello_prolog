@@ -12,7 +12,7 @@
 
 ### Instalação e Execução​
 
-Para a correta execução do jogo, usando SICStus Prolog versão 4.6, é necessário apenas definir o *working directory* do SICStus na pasta do jogo e utilizar a instrução consult('mapello.pl') ou `['mapello.pl'].`, seguida do predicado `play.`
+Para a correta execução do jogo, usando SICStus Prolog versão 4.6, é necessário apenas definir o *working directory* do SICStus na pasta do jogo e utilizar a instrução `consult('mapello.pl')` ou `['mapello.pl'].`, seguida do predicado `play.`
 
 ----
 
@@ -50,7 +50,7 @@ O jogo termina quando nenhum dos jogadores tem jogadas válidas. Ao terminar, s�
 
 #### 1. Átomos
 
-Os átomos utilizados para representar as peças podem ser consultados no ficheiro `atoms.pl`. Os átomos são identificados pela peça *Piece* e pelo seu símbolo *Symbol*. 
+Os átomos utilizados para representar as peças podem ser consultados no ficheiro `atoms.pl`. 
 
 * Joker - **joker**
 * Parede - **wall**
@@ -222,7 +222,7 @@ print_line([ID|L]):-
 O sistema de menus utilizado para definir o modo de jogo, os níveis dos computadores e o modo de geração do tabuleiro recorre, essencialmente, aos predicados do ficheiro `menu.pl`.
 
 
-O menu inicial permite ao utilizador escolher o modo de jogo: **Jogador vs Jogado**, **Jogador vs Computador** ou **Computador vs Computador**. 
+O menu inicial permite ao utilizador escolher o modo de jogo: **Jogador vs Jogador**, **Jogador vs Computador** ou **Computador vs Computador**. 
 
 ![Menu Inicial](images/menu_inicial.PNG)
 
@@ -231,7 +231,6 @@ Escolhendo o modo **Jogador vs Computador**, o utilizador escolhe ainda quem jog
 
 |![Ordem de Jogada](images/computador_jogador.PNG)|![Nível do computador](images/menu_1bot.PNG)|
 |--|---|
-
 
 
 Já no modo **Computador vs Computador**, é possível escolher o nível de inteligência artificial de cada computador.
@@ -273,7 +272,7 @@ Para ler um inteiro é utilizado o predicado `get_int(-Input)` e para ler um car
 		get_code(_), fail.
 ```
 
-Os predicados que pedem input ao utilizador recorrem todos a uma estratégia semelhante: utilizando o predicado `repeat\0`, os dois predicados anteriores e um predicado para validar se o input se enquadra no que está a ser pedido, pedem, repetidamente, o Input ao utilizador até este ser válido. Como exemplo, são descritos abaixo os predicados que pedem uma linha e uma coluna ao utilizador.
+Os predicados que pedem input ao utilizador recorrem todos a uma estratégia semelhante: utilizam o predicado `repeat/0`, os dois predicados anteriores e um predicado para validar se o input se enquadra no que está a ser pedido, pedindo, repetidamente, o Input ao utilizador até este ser válido. Como exemplo, são realçados abaixo os predicados que pedem uma linha e uma coluna ao utilizador.
 
 ```prolog
 % ask_row(-Row) - Asks the User for a valid Row
@@ -305,6 +304,45 @@ validate_col(Input, Input):-
 validate_col(_, _) :- 
 	write('ERROR: Invalid Column!\n\n'), fail.
 ```
+
+----
+
+### Predicado Principal - Ciclo do Jogo
+
+O predicado `game_loop` implementa o ciclo principal do jogo. Escolhendo o modo de jogo no menu inicial, o predicado vai receber o estado de jogo inicial, o jogador que joga primeiro, dois contadores para os pontos e o tipo de ambos os jogadores: 0 se o jogador for um utilizador, 1 se for um computador com nível *aleatório* e 2 se for um computador com nível *ganancioso*.
+Se o jogador atual puder jogar é mostrado o estado de jogo e é pedida ou gerada uma jogada válida. A jogada é realizada obtendo-se o novo estado de jogo e a nova pontuação.Atualiza-se o jogador e chama-se novamente o loop de jogo.
+
+```prolog
+game_loop(GameState, P1, P2):- game_loop(GameState, 1, 0, 0, P1, P2).
+
+game_loop(GameState, Player, BlackPoints, WhitePoints, P1, P2):-
+	\+cant_play(GameState, Player),
+	display_game(GameState, Player),
+	display_points(BlackPoints, WhitePoints),
+	repeat,
+	ask_move(GameState, Player, P1, P2, Row, Col),
+	move(GameState, [Player, Row, Col, BlackPoints, WhitePoints, NewBP, NewWP], NewGameState),
+	NewPlayer is -Player, 
+	game_loop(NewGameState, NewPlayer, NewBP, NewWP, P1, P2).
+```
+
+Se o jogador não puder jogar é passada a vez ao adversário se este tiver jogadas válidas. Caso o adversário também não possa jogar, é declarado o final do jogo.
+
+```prolog
+game_loop(GameState, Player, BlackPoints, WhitePoints, P1, P2):-
+	NewPlayer is -Player,
+	\+cant_play(GameState, NewPlayer),
+	player(Player, PlayerString, _, _),
+	format('\nNo valid moves for ~s player! Passing the turn...\n', [PlayerString]),
+	game_loop(GameState, NewPlayer, BlackPoints, WhitePoints, P1, P2).
+
+game_loop(GameState, _Player, BlackPoints, WhitePoints, _P1, _P2):-
+	nl, print_board(GameState), nl,
+	write('Game Over!\n'), nl,
+	game_over(GameState-BlackPoints-WhitePoints, Winner),
+	write(Winner), nl.
+```
+
 ----
 
 ### Lista de Jogadas Válidas
@@ -328,7 +366,7 @@ get_move(GameState, Player, Val-Row-Col):-
 	Val is S + Bonus.
 ``` 
 
-O predicado `valid_move(+GameState, +Player, +Move, -WouldTurn)` é responsável por verificar se a jogada corrente é válida, retornando a lista de possíveis peças do adversário a virar. A jogada é consumada se existir pelo menos uma peça do adversário que possa ser revertida, verificando em todas as direções as regras descritas em cima.
+O predicado `valid_move(+GameState, +Player, +Move, -WouldTurn)` é responsável por verificar se a jogada corrente é válida, retornando a lista de peças do adversário que a jogada faria virar. A jogada é consumada se existir pelo menos uma peça do adversário que possa ser revertida, verificando em todas as direções as regras descritas em cima.
 
 ```prolog
 valid_move(+GameState, +Player, +Move, -WouldTurn) - Check if a move is valid and return the cells of the pieces that it turns.
@@ -344,9 +382,11 @@ valid_move(GameState, Player, Row, Col, WouldTurn):-
 	WouldTurn = N-WouldTurnList.
 ```
 
+----
+
 ### Execução de Jogadas
 
-A validação e execução de uma jogada, obtendo o novo estado do jogo, é feita através do predicado `​move(+GameState,+Move,-NewGameState)​`. Este recorre a vários predicados auxiliares que validam efetivamente a jogada, colocam a peça na célula e viram as peças do adversário afetadas pela jogada, atualizando, finalmente, os pontos dos jogadores.
+A validação e execução de uma jogada, obtendo o novo estado do jogo, é feita através do predicado `​move(+GameState,+Move,-NewGameState)​`. Este recorre a vários predicados auxiliares que validam efetivamente a jogada, colocam a peça na célula e viram as peças do adversário afetadas pela jogada. Finalmente, são atualizados os pontos dos jogadores com o predicado `update_points`, que soma 3 pontos ao contador do jogador atual, caso este tenha posicionado a sua peça numa célula com bónus.
 
 ```prolog
 % move(+GameState, +Move, -NewGameState) - Validates and executes a move, returning the new game state
@@ -368,6 +408,7 @@ move(GameState, [Player, Row, Col, BlackPoints, WhitePoints, NewBP, NewWP], NewG
 move(_, _, _):- write('\n ERROR: Invalid move!\n'), fail.
 ``` 
 
+----
 
 ### Final do Jogo
 
@@ -390,6 +431,8 @@ game_over(GameState-BlackPoints-WhitePoints, Winner):-
 	get_winner(TotalBp, TotalWp, Winner).
 ```
 
+----
+
 ### Avaliação do Tabuleiro
 
 A avaliação do estado do jogo é feita pelo predicado `​value(+GameState, +Player, -Value)​` que calcula, neste caso, o número de jogadas válidas que podem ser realizadas pelo jogador atual. Caso não haja jogadas válidas - o tamanho da Lista é zero, é passada a vez ao adversário.
@@ -400,6 +443,8 @@ value(GameState, Player, Value):-
 	valid_moves(GameState, Player, ListOfMoves),
 	length(ListOfMoves, Value).
 ```
+
+----
 
 ### Jogada do Computador
 
@@ -417,6 +462,8 @@ choose_move(GameState, Player, 2, [Row,Col]):-
 	valid_moves(GameState, Player, ListOfMoves),
 	last(ListOfMoves, _-Row-Col).
 ```
+
+----
 
 ### Conclusões
 
