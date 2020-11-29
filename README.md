@@ -12,7 +12,7 @@
 
 ### Instalação e Execução​
 
-Para a correta execução do jogo, usando SICStus Prolog versão 4.6, é necessária apenas a instrução `['mapello.pl'].` seguida do predicado `play.`
+Para a correta execução do jogo, usando SICStus Prolog versão 4.6, é necessário apenas definir o *working directory* do SICStus na pasta do jogo e utilizar a instrução consult('mapello.pl') ou `['mapello.pl'].`, seguida do predicado `play.`
 
 ----
 
