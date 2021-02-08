@@ -1,12 +1,12 @@
-# PLOG_TP1_FINAL_T6_Mapello1
+# Mapello
 
 ### Identificação
 * Jogo: Mapello
 * Turma: 6
 * Grupo: Mapello1
 * Elementos:
-  * Diana Cristina Amaral de Freitas, [up201806230](up201806230@fe.up.pt)
-  * Eduardo Ribas Brito, [up201806271](up201806271@fe.up.pt)
+  * [Diana Freitas](https://github.com/dianaamfr)
+  * [Eduardo Brito](https://github.com/edurbrito)
 
 ----
 
